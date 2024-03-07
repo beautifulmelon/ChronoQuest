@@ -2,13 +2,15 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
-    public float speed = 6f;
+    public float speed = 6f;//이동속도
+    bool isleft = false;
+    bool isright = false;
+    public float dashSpeed = 8f;//대쉬거리
     bool iswall = false;
     bool isGround = false;
-    public int jumpcount = 2;
-    public float jump = 12f;
-    public float jumpPower = 0.025f;
+    public int jumpcount = 2;//점프횟수
+    public float jump = 17f;//점프 힘
+    public float jumpPower = 0.05f;//쭉 눌렀을 때 더 띄워지는 값
     float jumpTime = 0f;
     bool isjump = false;
     public GameObject wall;
@@ -30,29 +32,42 @@ public class Player : MonoBehaviour
 
         Move();
         Jump();
+        avoid();
 
     }
 
     void Move()//좌우 이동
     {
-
         iswall = wall.GetComponent<iswall>().wallreach;
         if (Input.GetKey(KeyCode.LeftArrow))
         {
+            isleft = true;
+            isright = false;
+
             if (iswall == false)
             {
                 transform.Translate(-speed * Time.deltaTime, 0, 0);//벽에 안 닿았을 때만 이동가능
             }
             transform.localScale = new Vector3(-1, 1, 1);//방향전환
         }
+        if (Input.GetKeyUp(KeyCode.LeftArrow))
+        {
+            isleft = false;
+        }
         if (Input.GetKey(KeyCode.RightArrow))
         {
+            isright = true;
+            isleft = false;
             if (iswall == false)
             {
                 transform.Translate(speed * Time.deltaTime, 0, 0);
             }
 
             transform.localScale = new Vector3(1, 1, 1);
+        }
+        if (Input.GetKeyUp(KeyCode.RightArrow))
+        {
+            isright = true;
         }
 
     }
@@ -62,7 +77,6 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.C))
         {
-
             isGround = Ground.GetComponent<isGround>().Groundreach;//isGround 정보 받아오기
             if (jumpcount > 0)
             {
@@ -94,13 +108,33 @@ public class Player : MonoBehaviour
             isjump = false;
         }
 
+    }
+    void avoid()
+    {
+        if (isGround == true && Input.GetKeyDown(KeyCode.Space))
+        {
+            if (isleft == true)
+            {
+                rigid.AddForce(Vector2.left * dashSpeed, ForceMode2D.Impulse);
+
+            }
+            else if (isright == true)
+            {
+                rigid.AddForce(Vector2.right * dashSpeed, ForceMode2D.Impulse);
+
+            }
+
+        }
+        if (rigid.velocity.x > 0)
+        {
+            //여기에 구르기 시 무적상태 넣기
+        }
 
 
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-
         isGround = Ground.GetComponent<isGround>().Groundreach;
         if (collision.gameObject.tag == "Ground")
         {
@@ -117,7 +151,6 @@ public class Player : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-
         isGround = Ground.GetComponent<isGround>().Groundreach;
         if (collision.gameObject.tag == "Ground")
         {
