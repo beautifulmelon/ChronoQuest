@@ -663,11 +663,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 6
+  dashSpeed: 8
   jumpcount: 2
   jump: 12
-  jumpPower: 0.025
+  jumpPower: 0.07
   wall: {fileID: 1210365240}
   Ground: {fileID: 38395349}
+  Parrying: {fileID: 5117225074009194661, guid: a1870c64a73802b48849d266651d0192, type: 3}
+  PerfectParrying: {fileID: 5117225074009194661, guid: 5ce8ab54d4a9c8047967b18524755ba1, type: 3}
+  parent: {fileID: 994777060}
 --- !u!50 &994777057
 Rigidbody2D:
   serializedVersion: 4
