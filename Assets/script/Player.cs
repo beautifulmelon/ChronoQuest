@@ -40,6 +40,10 @@ public class Player : MonoBehaviour
         Jump();
         avoid();
         defense();
+        if(isGround == true)
+        {
+            jumpcount = 1;
+        }
 
     }
 
@@ -195,7 +199,6 @@ public class Player : MonoBehaviour
                 jumpTime = 0f;
                 isjump = false;
                 jumpcount = 0;
-                //Debug.Log("땅닿음");
             }
 
         }
@@ -209,7 +212,10 @@ public class Player : MonoBehaviour
             if (isGround == false && isjump == false)
             {
                 jumpTime = 5f;
-                jumpcount++;
+                if(jumpcount == 0)
+                {
+                    jumpcount = 1;
+                }
                 //점프를 하지 않고 떨어졌을 때 점프키를 누르면 늦게떨어지는 것을 방지
                 rigid.velocity = new Vector2(0, rigid.velocity.y);
             }
