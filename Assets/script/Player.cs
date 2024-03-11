@@ -11,14 +11,14 @@ public class Player : MonoBehaviour
 
     public GameObject wall;
     public GameObject Ground;
-    public GameObject Parrying;
-    public GameObject PerfectParrying;
-    float ParryingCount = 0.5f;//완벽한 패링 가능 시간 밑에 174줄에 있는 것도 바꿔야 함 똑같은 값으로
-
+    public GameObject sword;
+    float attackTime = 0.2f;//공격범위생성시간 
+    float attackcultime = 1f;//공격 후 쿨타임
+    bool isattack = false;
+    bool attackOn = true;
     public Transform parent;//prefab부모지정
-    GameObject ParryingManager;
+    GameObject attackManager;
     bool isparrying = false;
-    bool stop = false;
     bool isleft = false;
     bool isright = false;
     bool iswall = false;
@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
         Move();
         Jump();
         avoid();
-        defense();
+        attack();
 
     }
 
@@ -95,7 +95,7 @@ public class Player : MonoBehaviour
     {
 
 
-        if (Input.GetKeyDown(KeyCode.C) && isparrying == false && rigid.velocity.x < 0.01f)
+        if (Input.GetKeyDown(KeyCode.C) && isparrying == false)
         {
             isGround = Ground.GetComponent<isGround>().Groundreach;//isGround 정보 받아오기
             if (jumpcount < 2)
@@ -127,6 +127,23 @@ public class Player : MonoBehaviour
         {
             isjump = false;
         }
+        isGround = Ground.GetComponent<isGround>().Groundreach;
+        if (isGround == true)
+        {
+            jumpTime = 0f;
+            isjump = false;
+            jumpcount = 0;
+        }
+        if (isGround == false && isjump == false)
+        {
+            jumpTime = 5f;
+            if (jumpcount == 0)
+            {
+                jumpcount = 1;
+            }
+            //점프를 하지 않고 떨어졌을 때 점프키를 누르면 늦게떨어지는 것을 방지
+            rigid.velocity = new Vector2(0, rigid.velocity.y);
+        }
 
     }
     void avoid()
@@ -154,77 +171,49 @@ public class Player : MonoBehaviour
 
 
     }
-    void defense()
+    void attack()
     {//막기 중에는 점프 밑 구르기 X 
-        if (Input.GetKeyDown(KeyCode.X))
+
+        if (Input.GetKeyDown(KeyCode.X) && attackOn == true)
         {
-            isparrying = true;
-            speed = speed - 3f;//막기 시 감속
+            isattack = true;
+            attackOn = false;
+            attackManager = Instantiate(sword, parent);
 
         }
-        if (Input.GetKey(KeyCode.X))
+        if(attackOn == false)
         {
-            //Debug.Log(ParryingCount);
-            ParryingCount = ParryingCount - Time.deltaTime;
-            if (ParryingCount > 0 && stop == false)
+            attackcultime = attackcultime - Time.deltaTime;
+            if (attackcultime < 0)
             {
-                ParryingManager = Instantiate(PerfectParrying, parent);
-                stop = true;
+                attackOn = true;
+                attackcultime = 1f;//이 값과 처음 변수 선언했을 때 사용했던 값이랑 같아야 함
             }
-            else if (ParryingCount < 0 && stop == true)
-            {
-                Debug.Log("가보자가보자~");
-                Destroy(ParryingManager);
-                ParryingManager = Instantiate(Parrying, parent);
-                stop = false;
-            }
-
-
         }
 
-        if (Input.GetKeyUp(KeyCode.X))
+        if (isattack == true)
         {
-            Destroy(ParryingManager);
-            isparrying = false;
-            speed = speed + 3f;
-            ParryingCount = 0.5f;//이 값을 바꿔야 함
-            stop = false;
+            attackTime = attackTime - Time.deltaTime;
+            
+            if(attackTime < 0)
+            {
+                Destroy(attackManager);
+                attackTime = 0.2f;//이 값과 처음 변수 선언했을 때 사용했던 값이랑 같아야 함
+                isattack = false;
+            }
+
         }
+
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)//자식 및 본인 모든 콜라이더에게 적용
     {
-        isGround = Ground.GetComponent<isGround>().Groundreach;
-        if (collision.gameObject.tag == "Ground")
-        {
-            Debug.Log("볃");
-            if (isGround == true)
-            {
-                jumpTime = 0f;
-                isjump = false;
-                jumpcount = 0;
-            }
 
-        }
-
+        Debug.Log("아무거나 닿음");
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        isGround = Ground.GetComponent<isGround>().Groundreach;
-        if (collision.gameObject.tag == "Ground")
-        {
-            if (isGround == false && isjump == false)
-            {
-                jumpTime = 5f;
-                if(jumpcount == 0)
-                {
-                    jumpcount = 1;
-                }
-                //점프를 하지 않고 떨어졌을 때 점프키를 누르면 늦게떨어지는 것을 방지
-                rigid.velocity = new Vector2(0, rigid.velocity.y);
-            }
 
-        }
 
     }
 

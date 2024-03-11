@@ -23,6 +23,7 @@ public class isGround : MonoBehaviour
         if (collision.gameObject.tag == "Ground")
         {
             Groundreach = true;
+            Debug.Log("∂• ¥Í¿Ω");
 
 
         }

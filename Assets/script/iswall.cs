@@ -16,13 +16,12 @@ public class iswall : MonoBehaviour
     {
 
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)//자식 혼자만 적용
     {
         if (collision.gameObject.tag == "Ground")
         {
             wallreach = true;
-            Debug.Log("www");//
-
+            Debug.Log("벽 닿음");
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
