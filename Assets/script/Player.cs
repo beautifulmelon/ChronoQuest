@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class Player : MonoBehaviour
-{
+{    
     public float speed = 6f;//이동속도
     public float dashSpeed = 8f;//대쉬거리
 
@@ -40,10 +40,6 @@ public class Player : MonoBehaviour
         Jump();
         avoid();
         defense();
-        if(isGround == true)
-        {
-            jumpcount = 1;
-        }
 
     }
 
@@ -86,8 +82,13 @@ public class Player : MonoBehaviour
         }
         if (Input.GetKeyUp(KeyCode.RightArrow))
         {
-            isright = true;
+            isright = false;
         }
+        if (isGround == true)
+        {
+            jumpcount = 1;
+        }
+
 
     }
     void Jump()
@@ -134,12 +135,14 @@ public class Player : MonoBehaviour
         {
             if (isleft == true)
             {
-                rigid.AddForce(Vector2.left * dashSpeed, ForceMode2D.Impulse);
+                rigid.velocity = new Vector2 (-dashSpeed, rigid.velocity.y);
+                //rigid.AddForce(Vector2.left * dashSpeed, ForceMode2D.Impulse);
 
             }
             else if (isright == true)
             {
-                rigid.AddForce(Vector2.right * dashSpeed, ForceMode2D.Impulse);
+                rigid.velocity = new Vector2(dashSpeed, rigid.velocity.y);
+                //rigid.AddForce(Vector2.right * dashSpeed, ForceMode2D.Impulse);
 
             }
 
@@ -194,6 +197,7 @@ public class Player : MonoBehaviour
         isGround = Ground.GetComponent<isGround>().Groundreach;
         if (collision.gameObject.tag == "Ground")
         {
+            Debug.Log("볃");
             if (isGround == true)
             {
                 jumpTime = 0f;
@@ -224,5 +228,5 @@ public class Player : MonoBehaviour
 
     }
 
-
+    
 }
