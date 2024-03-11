@@ -5,7 +5,7 @@ public class Player : MonoBehaviour
     public float speed = 6f;//이동속도
     public float dashSpeed = 8f;//대쉬거리
 
-    public int jumpcount = 2;//점프횟수
+    public int jumpcount = 0;//점프횟수
     public float jump = 17f;//점프 힘
     public float jumpPower = 0.05f;//쭉 눌렀을 때 더 띄워지는 값
 
@@ -93,13 +93,13 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C) && isparrying == false && rigid.velocity.x < 0.01f)
         {
             isGround = Ground.GetComponent<isGround>().Groundreach;//isGround 정보 받아오기
-            if (jumpcount > 0)
+            if (jumpcount < 2)
             {
 
                 rigid.velocity = new Vector2(rigid.velocity.x, 0);
                 rigid.AddForce(Vector2.up * jump, ForceMode2D.Impulse);//점프   
                 isjump = true;
-                jumpcount--;
+                jumpcount++;
 
             }
 
@@ -109,7 +109,7 @@ public class Player : MonoBehaviour
 
             if (isjump == true)
             {
-                rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);//그 이후 쭉 눌렀을 때 증가하는 점프량
+                rigid.AddForce(Vector2.up * jumpPower * Time.deltaTime, ForceMode2D.Impulse);//그 이후 쭉 눌렀을 때 증가하는 점프량
                 jumpTime = jumpTime + Time.deltaTime;
                 if (jumpTime > 0.25f) //0.25f는 0.25초간 누를 수 있음
                 {
@@ -194,7 +194,7 @@ public class Player : MonoBehaviour
             {
                 jumpTime = 0f;
                 isjump = false;
-                jumpcount = 2;
+                jumpcount = 0;
                 //Debug.Log("땅닿음");
             }
 
@@ -209,7 +209,7 @@ public class Player : MonoBehaviour
             if (isGround == false && isjump == false)
             {
                 jumpTime = 5f;
-                jumpcount--;
+                jumpcount++;
                 //점프를 하지 않고 떨어졌을 때 점프키를 누르면 늦게떨어지는 것을 방지
                 rigid.velocity = new Vector2(0, rigid.velocity.y);
             }

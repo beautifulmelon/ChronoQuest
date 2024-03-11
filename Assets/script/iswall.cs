@@ -21,6 +21,7 @@ public class iswall : MonoBehaviour
         if (collision.gameObject.tag == "Ground")
         {
             wallreach = true;
+            Debug.Log("www");
 
         }
     }
