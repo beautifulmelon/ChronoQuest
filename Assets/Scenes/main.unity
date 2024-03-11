@@ -696,7 +696,7 @@ MonoBehaviour:
   speed: 6
   dashSpeed: 8
   jumpcount: 2
-  jump: 1
+  jump: 12
   jumpPower: 1
   wall: {fileID: 1210365240}
   Ground: {fileID: 38395349}
