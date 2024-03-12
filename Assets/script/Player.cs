@@ -26,11 +26,33 @@ public class Player : MonoBehaviour
     float jumpTime = 0f;
     bool isjump = false;
     Rigidbody2D rigid;
+
+    //애니메이션
+    Animator animator;
+    private string currentState;
+
+    const string PLAYER_IDLE = "player_idle";
+    const string PLAYER_RUN = "player_run";
+    const string PLAYER_STOP = "player_stop";
+    const string PLAYER_JUMP = "player_jump";
+    const string PLAYER_FALL = "player_fall";
+    const string PLAYER_LAND = "player_land";
+    const string PLAYER_ATTACK1 = "player_attack1";
+    const string PLAYER_ATTACK2 = "player_attack2";
+    const string PLAYER_ATTACK3 = "player_attack3";
+    const string PLAYER_ATTACK_UP = "player_attack_up";
+    const string PLAYER_JUMP_ATTACK = "player_jump_attack";
+    const string PLAYER_JUMP_ATTACK_UP = "player_jump_attack_up";
+    const string PLAYER_JUMP_ATTACK_DOWN = "player_jump_attack_down";
+    const string PLAYER_ROLL = "player_roll";
+    const string PLAYER_WALLSLIDE = "player_wallslide";
+    const string PLAYER_WALLGRAB = "player_wallgrab";
+
     void Awake()
     {
 
         rigid = GetComponent<Rigidbody2D>();
-
+        animator = GetComponent<Animator>();
 
     }
     void Update()
@@ -89,6 +111,17 @@ public class Player : MonoBehaviour
             jumpcount = 1;
         }
 
+        if (isGround) //애니메이션
+        {
+            if(Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
+            {
+                ChangeAnimationState(PLAYER_RUN);
+            }
+            else
+            {
+                ChangeAnimationState(PLAYER_IDLE);
+            }
+        }
 
     }
     void Jump()
@@ -145,6 +178,15 @@ public class Player : MonoBehaviour
             rigid.velocity = new Vector2(0, rigid.velocity.y);
         }
 
+        //애니메이션
+        if (rigid.velocity.y > 0 && !isGround)
+        {
+            ChangeAnimationState(PLAYER_JUMP);
+        }
+        if(rigid.velocity.y < 0 && !isGround)
+        {
+            ChangeAnimationState(PLAYER_FALL);
+        }
     }
     void avoid()
     {
@@ -205,7 +247,13 @@ public class Player : MonoBehaviour
         }
 
     }
+    void ChangeAnimationState(string newState)
+    {
+        if (currentState == newState) return;
 
+        animator.Play(newState);
+        currentState = newState;
+    }
     private void OnTriggerEnter2D(Collider2D collision)//자식 및 본인 모든 콜라이더에게 적용
     {
 
