@@ -27,7 +27,7 @@ public class Player : MonoBehaviour
     bool isjump = false;
     Rigidbody2D rigid;
 
-    //애니메이션
+    //애니메이션 ---------------------------------------------------------------------------------
     Animator animator;
     private string currentState;
 
@@ -47,6 +47,10 @@ public class Player : MonoBehaviour
     const string PLAYER_ROLL = "player_roll";
     const string PLAYER_WALLSLIDE = "player_wallslide";
     const string PLAYER_WALLGRAB = "player_wallgrab";
+    private bool isAttacking;
+    private bool islanding;
+    private bool isfalling;
+    private bool isstopping;
 
     void Awake()
     {
@@ -117,10 +121,30 @@ public class Player : MonoBehaviour
             {
                 ChangeAnimationState(PLAYER_RUN);
             }
+            else if(Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow))
+            {
+                ChangeAnimationState(PLAYER_STOP);
+                CancelInvoke("StopComplete");
+                isstopping = true;
+                Invoke("StopComplete", animator.GetCurrentAnimatorStateInfo(0).length);
+            }
+            else if (isfalling)
+            {
+                isfalling = false;
+                ChangeAnimationState(PLAYER_LAND);
+                CancelInvoke("LandComplete");
+                islanding = true;
+                Invoke("LandComplete", animator.GetCurrentAnimatorStateInfo(0).length);
+
+            }
             else
             {
-                ChangeAnimationState(PLAYER_IDLE);
+                if (!isstopping && !islanding)
+                {
+                    ChangeAnimationState(PLAYER_IDLE);
+                }
             }
+            
         }
 
     }
@@ -185,6 +209,7 @@ public class Player : MonoBehaviour
         }
         if(rigid.velocity.y < 0 && !isGround)
         {
+            isfalling = true;
             ChangeAnimationState(PLAYER_FALL);
         }
     }
@@ -247,13 +272,7 @@ public class Player : MonoBehaviour
         }
 
     }
-    void ChangeAnimationState(string newState)
-    {
-        if (currentState == newState) return;
-
-        animator.Play(newState);
-        currentState = newState;
-    }
+    
     private void OnTriggerEnter2D(Collider2D collision)//자식 및 본인 모든 콜라이더에게 적용
     {
 
@@ -265,5 +284,23 @@ public class Player : MonoBehaviour
 
     }
 
-    
+    void ChangeAnimationState(string newState)
+    {
+        if (currentState == newState) return;
+
+        animator.Play(newState);
+        currentState = newState;
+    }
+    void AttackComplete()
+    {
+        isAttacking = false;
+    }
+    void LandComplete()
+    {
+        islanding = false;
+    }
+    void StopComplete()
+    {
+        isstopping = false;
+    }
 }
