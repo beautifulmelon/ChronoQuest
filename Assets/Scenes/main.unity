@@ -169,7 +169,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.36}
+  m_Offset: {x: -0.05, y: -0.36}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -180,7 +180,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.04, y: 0.5}
+  m_Size: {x: 0.3, y: 0.5}
   m_EdgeRadius: 0
 --- !u!114 &38395352
 MonoBehaviour:
@@ -696,14 +696,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 6
   dashSpeed: 11
-  jumpcount: 0
-  jump: 17
-  jumpPower: 0.05
+  jumpcount: 2
+  jump: 10
+  jumpPower: 20
   wall: {fileID: 1210365240}
   Ground: {fileID: 38395349}
   sword: {fileID: 4025704576715839588, guid: c3db7cd6b3b953646844de6e92b3dd22, type: 3}
-  attackTime: 2
-  attackcultime: 1
   parent: {fileID: 994777060}
 --- !u!50 &994777057
 Rigidbody2D:
@@ -720,7 +718,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 5
+  m_GravityScale: 4
   m_Material: {fileID: 0}
   m_Interpolate: 2
   m_SleepingMode: 1
@@ -900,7 +898,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5}
+  m_Size: {x: 0.3, y: 0.5}
   m_EdgeRadius: 0
 --- !u!114 &1210365243
 MonoBehaviour:
