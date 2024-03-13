@@ -21,7 +21,7 @@ public class iswall : MonoBehaviour
         if (collision.gameObject.tag == "Ground")
         {
             wallreach = true;
-            Debug.Log("∫Æ ¥Í¿Ω");
+
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
