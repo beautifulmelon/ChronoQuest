@@ -2,19 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class defense : MonoBehaviour
+public class attack : MonoBehaviour
 {
-    public float PerfectTime = 1f;
-    private void Awake()
-    {
-        Debug.Log("¸·±â@!");
-    }
+    // Start is called before the first frame update
     void Start()
     {
-
+    
     }
+
+    // Update is called once per frame
     void Update()
     {
-
+        
     }
 }
