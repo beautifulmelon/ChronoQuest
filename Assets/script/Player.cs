@@ -2,33 +2,60 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {    
-    public float speed = 6f;//ÀÌµ¿¼Óµµ
-    public float dashSpeed = 8f;//´ë½¬°Å¸®
+    public float speed = 6f;//ì´ë™ì†ë„
+    public float dashSpeed = 8f;//ëŒ€ì‰¬ê±°ë¦¬
 
-    public int jumpcount = 2;//Á¡ÇÁÈ½¼ö
-    public float jump = 17f;//Á¡ÇÁ Èû
-    public float jumpPower = 0.05f;//Âß ´­·¶À» ¶§ ´õ ¶ç¿öÁö´Â °ª
+    public int jumpcount = 2;//ì í”„íšŸìˆ˜
+    public float jump = 17f;//ì í”„ í˜
+    public float jumpPower = 0.05f;//ì­‰ ëˆŒë €ì„ ë•Œ ë” ë„ì›Œì§€ëŠ” ê°’
 
     public GameObject wall;
     public GameObject Ground;
     public GameObject sword;
-    float attackTime = 0.2f;//°ø°İ¹üÀ§»ı¼º½Ã°£ 
-    float attackcultime = 1f;//°ø°İ ÈÄ ÄğÅ¸ÀÓ
+    float attackTime = 0.2f;//ê³µê²©ë²”ìœ„ìƒì„±ì‹œê°„ 
+    float attackcultime = 1f;//ê³µê²© í›„ ì¿¨íƒ€ì„
     bool isattack = false;
     bool attackOn = true;
-    public Transform parent;//prefabºÎ¸ğÁöÁ¤
+    public Transform parent;//prefabë¶€ëª¨ì§€ì •
     GameObject attackManager;
     bool iswall = false;
     bool isGround = false;
     float jumpTime = 0f;
     bool isjump = false;
     Rigidbody2D rigid;
+
+    //ì• ë‹ˆë©”ì´ì…˜ ---------------------------------------------------------------------------------
+    Animator animator;
+    private string currentState;
+
+    const string PLAYER_IDLE = "player_idle";
+    const string PLAYER_RUN = "player_run";
+    const string PLAYER_STOP = "player_stop";
+    const string PLAYER_JUMP = "player_jump";
+    const string PLAYER_FALL = "player_fall";
+    const string PLAYER_LAND = "player_land";
+    const string PLAYER_ATTACK1 = "player_attack1";
+    const string PLAYER_ATTACK2 = "player_attack2";
+    const string PLAYER_ATTACK3 = "player_attack3";
+    const string PLAYER_ATTACK_UP = "player_attack_up";
+    const string PLAYER_JUMP_ATTACK = "player_jump_attack";
+    const string PLAYER_JUMP_ATTACK_UP = "player_jump_attack_up";
+    const string PLAYER_JUMP_ATTACK_DOWN = "player_jump_attack_down";
+    const string PLAYER_ROLL = "player_roll";
+    const string PLAYER_WALLSLIDE = "player_wallslide";
+    const string PLAYER_WALLGRAB = "player_wallgrab";
+    private bool isAttacking;
+    private bool islanding;
+    private bool isfalling;
+    private bool isstopping;
+
     SpriteRenderer spriteRenderer;
+    
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         rigid = GetComponent<Rigidbody2D>();
-
+        animator = GetComponent<Animator>();
 
     }
     void Update()
@@ -40,8 +67,8 @@ public class Player : MonoBehaviour
         attack();
         if(iswall == true && isGround == false)
         {
-            //º®Å¸±â
-            if(rigid.velocity.y < -0.5f)//0.5´Â maxspeed
+            //ë²½íƒ€ê¸°
+            if(rigid.velocity.y < -0.5f)//0.5ëŠ” maxspeed
             {
                 rigid.velocity = new Vector2(rigid.velocity.x, -0.5f);
             }
@@ -52,7 +79,7 @@ public class Player : MonoBehaviour
         
     }
 
-    void Move()//ÁÂ¿ì ÀÌµ¿
+    void Move()//ì¢Œìš° ì´ë™
     {
         iswall = wall.GetComponent<iswall>().wallreach;
         if (Input.GetKeyDown(KeyCode.LeftArrow))
@@ -64,9 +91,9 @@ public class Player : MonoBehaviour
 
             if (iswall == false)
             {
-                transform.Translate(-speed * Time.deltaTime, 0, 0);//º®¿¡ ¾È ´ê¾ÒÀ» ¶§¸¸ ÀÌµ¿°¡´É
+                transform.Translate(-speed * Time.deltaTime, 0, 0);//ë²½ì— ì•ˆ ë‹¿ì•˜ì„ ë•Œë§Œ ì´ë™ê°€ëŠ¥
             }
-            transform.localScale = new Vector2(-1, 1);//¹æÇâÀüÈ¯
+            transform.localScale = new Vector2(-1, 1);//ë°©í–¥ì „í™˜
         }
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
@@ -89,6 +116,37 @@ public class Player : MonoBehaviour
             jumpcount = 2;
         }
 
+        if (isGround) //ì• ë‹ˆë©”ì´ì…˜
+        {
+            if(Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
+            {
+                ChangeAnimationState(PLAYER_RUN);
+            }
+            else if(Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow))
+            {
+                ChangeAnimationState(PLAYER_STOP);
+                CancelInvoke("StopComplete");
+                isstopping = true;
+                Invoke("StopComplete", animator.GetCurrentAnimatorStateInfo(0).length);
+            }
+            else if (isfalling)
+            {
+                isfalling = false;
+                ChangeAnimationState(PLAYER_LAND);
+                CancelInvoke("LandComplete");
+                islanding = true;
+                Invoke("LandComplete", animator.GetCurrentAnimatorStateInfo(0).length);
+
+            }
+            else
+            {
+                if (!isstopping && !islanding)
+                {
+                    ChangeAnimationState(PLAYER_IDLE);
+                }
+            }
+            
+        }
 
     }
 
@@ -102,7 +160,7 @@ public class Player : MonoBehaviour
             if (jumpcount > 0)
             {
                 rigid.velocity = new Vector2(rigid.velocity.x, 0);
-                rigid.AddForce(Vector2.up * jump, ForceMode2D.Impulse);//Á¡ÇÁ   
+                rigid.AddForce(Vector2.up * jump, ForceMode2D.Impulse);//ì í”„   
                 isjump = true;
                 jumpcount--;
 
@@ -115,16 +173,16 @@ public class Player : MonoBehaviour
 
             if (isjump == true)
             {
-                rigid.AddForce(Vector2.up * jumpPower * Time.deltaTime, ForceMode2D.Impulse);//±× ÀÌÈÄ Âß ´­·¶À» ¶§ Áõ°¡ÇÏ´Â Á¡ÇÁ·®
+                rigid.AddForce(Vector2.up * jumpPower * Time.deltaTime, ForceMode2D.Impulse);//ê·¸ ì´í›„ ì­‰ ëˆŒë €ì„ ë•Œ ì¦ê°€í•˜ëŠ” ì í”„ëŸ‰
                 jumpTime = jumpTime + Time.deltaTime;
-                if (jumpTime > 0.25f) //0.25f´Â 0.25ÃÊ°£ ´©¸¦ ¼ö ÀÖÀ½
+                if (jumpTime > 0.25f) //0.25fëŠ” 0.25ì´ˆê°„ ëˆ„ë¥¼ ìˆ˜ ìˆìŒ
                 {
                     isjump = false;
                 }
 
             }
         }
-        if (Input.GetKeyUp(KeyCode.C))//Á¡ÇÁ¸¦ »ìÂ¦¸¸ ´©¸£°í ¶®À» ¶§ ´Ù½Ã ´©¸£¸é ÈûÀ» ÁÙ ¼ö ÀÖ´ø °ÍÀ» ¹æÁö
+        if (Input.GetKeyUp(KeyCode.C))//ì í”„ë¥¼ ì‚´ì§ë§Œ ëˆ„ë¥´ê³  ë• ì„ ë•Œ ë‹¤ì‹œ ëˆ„ë¥´ë©´ í˜ì„ ì¤„ ìˆ˜ ìˆë˜ ê²ƒì„ ë°©ì§€
         {
             isjump = false;
 
@@ -143,10 +201,20 @@ public class Player : MonoBehaviour
             {
                 jumpcount = 1;
             }
-            //Á¡ÇÁ¸¦ ÇÏÁö ¾Ê°í ¶³¾îÁ³À» ¶§ Á¡ÇÁÅ°¸¦ ´©¸£¸é 2¹øÁ¡ÇÁµÇ´Â°É ¹æÁö
+            //ì í”„ë¥¼ í•˜ì§€ ì•Šê³  ë–¨ì–´ì¡Œì„ ë•Œ ì í”„í‚¤ë¥¼ ëˆ„ë¥´ë©´ 2ë²ˆì í”„ë˜ëŠ”ê±¸ ë°©ì§€
             
         }
 
+        //ì• ë‹ˆë©”ì´ì…˜
+        if (rigid.velocity.y > 0 && !isGround)
+        {
+            ChangeAnimationState(PLAYER_JUMP);
+        }
+        if(rigid.velocity.y < 0 && !isGround)
+        {
+            isfalling = true;
+            ChangeAnimationState(PLAYER_FALL);
+        }
     }
     void avoid()
     {
@@ -154,7 +222,7 @@ public class Player : MonoBehaviour
         {
             if(iswall == false)
             {
-                //¿©±â¿¡ ±¸¸£±â ¸ğ¼Ç¸¸ ³Ö±â
+                //ì—¬ê¸°ì— êµ¬ë¥´ê¸° ëª¨ì…˜ë§Œ ë„£ê¸°
                 if (transform.localScale.x == -1)
                 {
                     rigid.velocity = new Vector2(-dashSpeed, rigid.velocity.y);
@@ -172,7 +240,7 @@ public class Player : MonoBehaviour
 
             
 
-            //¾Ö´Ï¸ŞÀÌ¼ÇÀ¸·Î ±¼·¶À» ¶§ ¹«Àû »óÅÂ ³Ö±â(±¸¸£±â ¸ğ¼ÇÀÏ¶§ ¹«Àû) + ±¸¸£±â ÄğÅ¸ÀÓ + ±¸¸£±â ¸ğ¼ÇÀÏ ¶§ ¹æÇâÀüÈ¯ x
+            //ì• ë‹ˆë©”ì´ì…˜ìœ¼ë¡œ êµ´ë €ì„ ë•Œ ë¬´ì  ìƒíƒœ ë„£ê¸°(êµ¬ë¥´ê¸° ëª¨ì…˜ì¼ë•Œ ë¬´ì ) + êµ¬ë¥´ê¸° ì¿¨íƒ€ì„ + êµ¬ë¥´ê¸° ëª¨ì…˜ì¼ ë•Œ ë°©í–¥ì „í™˜ x
         }
 
 
@@ -194,7 +262,7 @@ public class Player : MonoBehaviour
             if (attackcultime < 0)
             {
                 attackOn = true;
-                attackcultime = 1f;//ÀÌ °ª°ú Ã³À½ º¯¼ö ¼±¾ğÇßÀ» ¶§ »ç¿ëÇß´ø °ªÀÌ¶û °°¾Æ¾ß ÇÔ
+                attackcultime = 1f;//ì´ ê°’ê³¼ ì²˜ìŒ ë³€ìˆ˜ ì„ ì–¸í–ˆì„ ë•Œ ì‚¬ìš©í–ˆë˜ ê°’ì´ë‘ ê°™ì•„ì•¼ í•¨
             }
         }
 
@@ -205,15 +273,15 @@ public class Player : MonoBehaviour
             if(attackTime < 0)
             {
                 Destroy(attackManager);
-                attackTime = 0.2f;//ÀÌ °ª°ú Ã³À½ º¯¼ö ¼±¾ğÇßÀ» ¶§ »ç¿ëÇß´ø °ªÀÌ¶û °°¾Æ¾ß ÇÔ
+                attackTime = 0.2f;//ì´ ê°’ê³¼ ì²˜ìŒ ë³€ìˆ˜ ì„ ì–¸í–ˆì„ ë•Œ ì‚¬ìš©í–ˆë˜ ê°’ì´ë‘ ê°™ì•„ì•¼ í•¨
                 isattack = false;
             }
 
         }
 
     }
-
-    private void OnTriggerEnter2D(Collider2D collision)//ÀÚ½Ä ¹× º»ÀÎ ¸ğµç Äİ¶óÀÌ´õ¿¡°Ô Àû¿ë
+    
+    private void OnTriggerEnter2D(Collider2D collision)//ìì‹ ë° ë³¸ì¸ ëª¨ë“  ì½œë¼ì´ë”ì—ê²Œ ì ìš©
     {
 
     }
@@ -223,5 +291,23 @@ public class Player : MonoBehaviour
 
     }
 
-    
+    void ChangeAnimationState(string newState)
+    {
+        if (currentState == newState) return;
+
+        animator.Play(newState);
+        currentState = newState;
+    }
+    void AttackComplete()
+    {
+        isAttacking = false;
+    }
+    void LandComplete()
+    {
+        islanding = false;
+    }
+    void StopComplete()
+    {
+        isstopping = false;
+    }
 }
