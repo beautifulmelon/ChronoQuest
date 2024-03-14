@@ -307,7 +307,7 @@ public class Player : MonoBehaviour
                     CancelInvoke("AttackComplete");
                     isattacking = true;
                     Invoke("AttackComplete", 0.38f);
-                }
+                }       
                 else
                 {
                     Vector3 parentPosition = parent.transform.position;
