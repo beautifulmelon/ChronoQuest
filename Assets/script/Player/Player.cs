@@ -422,7 +422,7 @@ public class Player : MonoBehaviour
                 attackcultime = 1f;//이 값과 처음 변수 선언했을 때 사용했던 값이랑 같아야 함
             }
         }
-
+        //.
         if (isattack == true)
         {
             attackTime = attackTime - Time.deltaTime;
