@@ -837,8 +837,7 @@ MonoBehaviour:
   Ground: {fileID: 38395349}
   sword: {fileID: 4025704576715839588, guid: c3db7cd6b3b953646844de6e92b3dd22, type: 3}
   parent: {fileID: 994777060}
-  isstopping: 0
-  isrolling: 0
+  iswalljump: 0
 --- !u!50 &994777057
 Rigidbody2D:
   serializedVersion: 4
@@ -1235,7 +1234,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 7
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

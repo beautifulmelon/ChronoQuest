@@ -164,7 +164,7 @@ public class Player : MonoBehaviour
         isGround = Ground.GetComponent<isGround>().Groundreach;
         if (Input.GetKeyDown(KeyCode.C))
         {
-            rigid.velocity = new Vector2(0, rigid.velocity.y);
+            //rigid.velocity = new Vector2(0, rigid.velocity.y);
             
             if (jumpcount > 0)
             {
@@ -247,7 +247,7 @@ public class Player : MonoBehaviour
     }
     void avoid()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isGround == true && rollcooltime <= 0)
+        if (Input.GetKeyDown(KeyCode.Z) && isGround == true && rollcooltime <= 0)
         {
             //애니메이션
             ChangeAnimationState(PLAYER_ROLL);
@@ -295,6 +295,12 @@ public class Player : MonoBehaviour
             {
                 if (Input.GetKey(KeyCode.UpArrow))
                 {
+                    Vector3 parentPosition = parent.transform.position;
+                    Vector3 newPosition = parentPosition + new Vector3(0, 0.25f, 0);
+                    Quaternion newRotation = Quaternion.Euler(0, 0, 90);
+                    attackManager = Instantiate(sword, newPosition, newRotation, parent.transform);
+                    Destroy(attackManager, 0.1f);
+
                     attackformchange = 0; // 공격모션 123 초기화
                     //애니메이션
                     ChangeAnimationState(PLAYER_ATTACK_UP);
@@ -304,6 +310,11 @@ public class Player : MonoBehaviour
                 }
                 else
                 {
+                    Vector3 parentPosition = parent.transform.position;
+                    Vector3 newPosition = parentPosition + new Vector3(0.5f * transform.localScale.x, -0.2f, 0);
+                    attackManager = Instantiate(sword, newPosition, Quaternion.identity, parent.transform);
+                    Destroy(attackManager, 0.1f);
+
                     if (Input.GetKey(KeyCode.RightArrow))
                     {
                         rigid.AddForce(Vector2.right * 5, ForceMode2D.Impulse);
@@ -342,14 +353,31 @@ public class Player : MonoBehaviour
 
                 if (Input.GetKey(KeyCode.UpArrow))
                 {
+                    Vector3 parentPosition = parent.transform.position;
+                    Vector3 newPosition = parentPosition + new Vector3(0, 0.5f, 0);
+                    Quaternion newRotation = Quaternion.Euler(0, 0, 90);
+                    attackManager = Instantiate(sword, newPosition, newRotation, parent.transform);
+                    Destroy(attackManager, 0.1f);
+
                     ChangeAnimationState(PLAYER_JUMP_ATTACK_UP); //애니메이션
                 }
                 else if (Input.GetKey(KeyCode.DownArrow))
                 {
+                    Vector3 parentPosition = parent.transform.position;
+                    Vector3 newPosition = parentPosition + new Vector3(0, -0.5f, 0);
+                    Quaternion newRotation = Quaternion.Euler(0, 0, -90);
+                    attackManager = Instantiate(sword, newPosition, newRotation, parent.transform);
+                    Destroy(attackManager, 0.1f);
+
                     ChangeAnimationState(PLAYER_JUMP_ATTACK_DOWN); //애니메이션
                 }
                 else
                 {
+                    Vector3 parentPosition = parent.transform.position;
+                    Vector3 newPosition = parentPosition + new Vector3(0.5f * transform.localScale.x, 0, 0);
+                    attackManager = Instantiate(sword, newPosition, Quaternion.identity, parent.transform);
+                    Destroy(attackManager, 0.1f);
+
                     ChangeAnimationState(PLAYER_JUMP_ATTACK);
                 }
 
@@ -360,9 +388,8 @@ public class Player : MonoBehaviour
             }
             
 
-            attackManager = Instantiate(sword, parent);
-            Destroy(attackManager, 0.1f);
-
+            //attackManager = Instantiate(sword, parent);
+            //Destroy(attackManager, 0.1f);
         }
         else
         {
