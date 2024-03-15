@@ -6,9 +6,11 @@ public class EnemyAi : MonoBehaviour
 {
     public float EnemySpeed;
     public GameObject EnemyMovement;
+    public GameObject AttackReaction;
     public Transform Playerpos;
     int nextMove = 0;
     bool detect = false;
+    bool EAttack = false;
     float rage = 0f;
     // Start is called before the first frame update
     private void Awake()
@@ -23,14 +25,22 @@ public class EnemyAi : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        EAttack = AttackReaction.GetComponent<AttackReaction>().EnemyAttack;
         detect = EnemyMovement.GetComponent<EnemyMovement>().Movement;
-        if(detect ==false )
+        if(detect == false)
         {
             transform.Translate(EnemySpeed * nextMove * Time.deltaTime, 0, 0);
+            if(nextMove < 0)
+            {
+                transform.localScale = new Vector2(-1, 1);
+            }
+            else if(nextMove > 0)
+            {
+                transform.localScale = new Vector2(1, 1);
+            }
         }
 
-        else if (detect == true)
+        else if (detect == true && EAttack == false)
         {
             rage = Playerpos.position.x - transform.position.x;
             if(rage < 0f)
