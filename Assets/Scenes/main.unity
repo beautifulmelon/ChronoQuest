@@ -745,6 +745,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemySpeed: 1
   EnemyMovement: {fileID: 1468484372}
+  AttackReaction: {fileID: 1897016154}
   Playerpos: {fileID: 994777060}
 --- !u!1 &588616800
 GameObject:
@@ -1317,7 +1318,7 @@ Transform:
   m_GameObject: {fileID: 1468484372}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 12, y: 4, z: 1}
+  m_LocalScale: {x: 15, y: 6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 497222892}
@@ -1394,10 +1395,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9363d6d0b3d4864dab50b95525d15f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyAttack: {fileID: 2176665740966223031, guid: b62ecb8d08cb20945b8a1d0881e2f08c, type: 3}
+  EnemyArm: {fileID: 2176665740966223031, guid: b62ecb8d08cb20945b8a1d0881e2f08c, type: 3}
   EnemyParent: {fileID: 497222892}
   ReationTime: 1
   actionTime: 0.5
+  Reaction: 0
+  EnemyAttack: 0
 --- !u!1 &1918570642
 GameObject:
   m_ObjectHideFlags: 0
