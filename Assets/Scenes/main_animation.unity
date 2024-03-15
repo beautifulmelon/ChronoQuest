@@ -622,7 +622,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 474161374}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -10.03, y: 2.6174064, z: -1.4940213}
+  m_LocalPosition: {x: -15.92, y: 4.8, z: -1.4940213}
   m_LocalScale: {x: 1.3919156, y: 13.448904, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -828,16 +828,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23ac2b9c0521f5443b09f4328f6d83ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 6
-  dashSpeed: 11
-  jumpcount: 0
-  jump: 17
+  speed: 10
+  speedair: 8
+  dashSpeed: 16
+  runAccelAmount: 10
+  runDeccelAmount: 10
+  accelInAir: 1
+  deccelInAir: 1.1
+  jump: 20
+  jump_wall: 18
   jumpPower: 0.05
+  maxfallspeed: -16
+  gravityscale: 5
+  fallgravityscale: 2.1
   wall: {fileID: 1210365240}
   Ground: {fileID: 38395349}
   sword: {fileID: 4025704576715839588, guid: c3db7cd6b3b953646844de6e92b3dd22, type: 3}
   parent: {fileID: 994777060}
-  iswalljump: 0
+  cooltime_roll: 0.5
+  cooltime_attack: 0.2
+  cooltime_attack_air: 0.4
 --- !u!50 &994777057
 Rigidbody2D:
   serializedVersion: 4
@@ -854,7 +864,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 5
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: b4aca31fce614ef488cf5a363baf5b7f, type: 2}
   m_Interpolate: 2
   m_SleepingMode: 1
   m_CollisionDetection: 1
@@ -1192,6 +1202,7 @@ GameObject:
   - component: {fileID: 1918570645}
   - component: {fileID: 1918570644}
   - component: {fileID: 1918570643}
+  - component: {fileID: 1918570646}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1257,11 +1268,26 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1918570642}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.03, y: 2.07, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1918570646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918570642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80d211420a47eca489c8d1486ce5a035, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 994777055}
+  cammode: 1
+  smoothspeed: 5
