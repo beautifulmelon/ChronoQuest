@@ -829,17 +829,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  speedair: 8
-  dashSpeed: 16
+  speedair: 7
+  dashSpeed: 13
   runAccelAmount: 10
   runDeccelAmount: 10
   accelInAir: 1
   deccelInAir: 1.1
-  jump: 20
+  jump: 16
   jump_wall: 18
   jumpPower: 0.05
-  maxfallspeed: -16
-  gravityscale: 5
+  maxfallspeed: -15
+  gravityscale: 3
   fallgravityscale: 2.1
   wall: {fileID: 1210365240}
   Ground: {fileID: 38395349}
