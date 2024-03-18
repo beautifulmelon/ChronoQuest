@@ -26,6 +26,7 @@ public class Player : MonoBehaviour
     Rigidbody2D rigid;
     float rollcooltime = 0;
 
+    public float HitPushForce;
     //애니메이션 ---------------------------------------------------------------------------------
     Animator animator;
     private string currentState;
@@ -80,10 +81,7 @@ public class Player : MonoBehaviour
             }
         }
     }
-    private void FixedUpdate()
-    {
-        
-    }
+
 
     void Move()//좌우 이동
     {
@@ -440,7 +438,17 @@ public class Player : MonoBehaviour
     
     private void OnTriggerEnter2D(Collider2D collision)//자식 및 본인 모든 콜라이더에게 적용
     {
-
+        if(collision.gameObject.tag == "EnemyAttack")//적의 공격  
+        {
+            if(transform.localScale.x == 1)
+            {
+                //rigid.AddForce(Vector2.left * HitPushForce, ForceMode2D.Impulse);
+            }
+            else if(transform.localScale.x == -1)
+            {
+               //rigid.AddForce(Vector2.right * HitPushForce, ForceMode2D.Impulse);
+            }
+        }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
