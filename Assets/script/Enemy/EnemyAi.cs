@@ -5,16 +5,22 @@ using UnityEngine;
 public class EnemyAi : MonoBehaviour
 {
     public float EnemySpeed;
+    public float Hit_rage;
     public GameObject EnemyMovement;
     public GameObject AttackReaction;
+    public GameObject EnemyHit;
     public Transform Playerpos;
     int nextMove = 0;
     bool detect = false;
     bool EAttack = false;
-    float rage = 0f;
+    public float rage = 0f;
+    bool Hit_left = false;
+    bool Hit_right = false;
+    Rigidbody2D rigid;
     // Start is called before the first frame update
     private void Awake()
     {
+        rigid = GetComponent<Rigidbody2D>();
         Invoke("Think", 1f);
     }
     void Start()
@@ -25,8 +31,11 @@ public class EnemyAi : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Hit_left = EnemyHit.GetComponent<EnemyHit>().Hit_left;
+        Hit_right = EnemyHit.GetComponent<EnemyHit>().Hit_right;
+        
         EAttack = AttackReaction.GetComponent<AttackReaction>().EnemyAttack;
-        detect = EnemyMovement.GetComponent<EnemyMovement>().Movement;
+        detect = EnemyMovement.GetComponent<EnemyMovement>().Movement;//이렇게 계속 다른컴포넌트가져오는건 최적화에서 애바일듯
         if(detect == false)
         {
             transform.Translate(EnemySpeed * nextMove * Time.deltaTime, 0, 0);
@@ -55,10 +64,28 @@ public class EnemyAi : MonoBehaviour
             }
         }
         
+
+        Hit();
+        
     }
     void Think()
     {
         nextMove = Random.Range(-1, 2);//(최솟값, 최댓값 +1) 최댓값은 안나옴(올림해서그런듯)
         Invoke("Think", 1f);
     }
+    void Hit()
+    {
+        if(Hit_left == true)
+        {
+            //rigid.velocity = new Vector2(-Hit_rage * Time.deltaTime, rigid.velocity.y);
+            rigid.AddForce(Vector2.left * -Hit_rage * Time.deltaTime, ForceMode2D.Impulse);//다음시간에 계속
+            Debug.Log("ww");
+        }
+        else if(Hit_right == true)
+        {
+            //rigid.velocity = new Vector2(Hit_rage * Time.deltaTime, rigid.velocity.y);
+            rigid.AddForce(Vector2.left * Hit_rage * Time.deltaTime, ForceMode2D.Impulse);
+        }
+    }
+    
 }

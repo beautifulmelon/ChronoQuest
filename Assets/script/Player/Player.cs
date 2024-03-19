@@ -5,6 +5,7 @@ public class Player : MonoBehaviour
     public float speed = 6f;//이동속도
     public float dashSpeed = 8f;//대쉬거리
 
+
     public int jumpcount = 2;//점프횟수
     public float jump = 17f;//점프 힘
     public float jumpPower = 0.05f;//쭉 눌렀을 때 더 띄워지는 값
@@ -91,6 +92,8 @@ public class Player : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
                 rigid.velocity = new Vector2(0, rigid.velocity.y);
+    
+
             }
             if (Input.GetKey(KeyCode.LeftArrow))
             {
@@ -102,9 +105,11 @@ public class Player : MonoBehaviour
                 transform.localScale = new Vector2(-1, 1);//방향전환
             }
 
+
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
                 rigid.velocity = new Vector2(0, rigid.velocity.y);
+
             }
             if (Input.GetKey(KeyCode.RightArrow))
             {
@@ -440,13 +445,17 @@ public class Player : MonoBehaviour
     {
         if(collision.gameObject.tag == "EnemyAttack")//적의 공격  
         {
-            if(transform.localScale.x == 1)
+            if(transform.localScale.x == 1)//이걸 적과의 거리를 기준으로 잡아야 함
             {
+                
+                //rigid.velocity = new Vector2(-HitPushForce, rigid.velocity.y);
                 //rigid.AddForce(Vector2.left * HitPushForce, ForceMode2D.Impulse);
             }
             else if(transform.localScale.x == -1)
             {
-               //rigid.AddForce(Vector2.right * HitPushForce, ForceMode2D.Impulse);
+                
+                //rigid.velocity = new Vector2(HitPushForce, rigid.velocity.y);
+
             }
         }
     }
