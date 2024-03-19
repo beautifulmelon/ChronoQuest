@@ -25,7 +25,7 @@ public class EnemyHit : MonoBehaviour
     {
         if(collision.gameObject.tag == "sword")
         {
-            Debug.Log("¾Æ¾ß");
+           
             rage = Enemy.GetComponent<EnemyAi>().rage;
             if(rage < 0)
             {
