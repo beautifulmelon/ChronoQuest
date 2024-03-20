@@ -441,24 +441,21 @@ public class Player : MonoBehaviour
         */
     }
     
-    private void OnTriggerEnter2D(Collider2D collision)//자식 및 본인 모든 콜라이더에게 적용
+    private void OnTriggerEnter2D(Collider2D other)//자식 및 본인 모든 콜라이더에게 적용
     {
-        if(collision.gameObject.tag == "EnemyAttack")//적의 공격  
+        if(other.gameObject.tag == "EnemyAttack")
         {
-            if(transform.localScale.x == 1)//이걸 적과의 거리를 기준으로 잡아야 함
+            if(transform.position.x < other.gameObject.transform.position.x)
             {
-                
-                //rigid.velocity = new Vector2(-HitPushForce, rigid.velocity.y);
-                //rigid.AddForce(Vector2.left * HitPushForce, ForceMode2D.Impulse);
+                rigid.velocity = new Vector2(-HitPushForce , rigid.velocity.y);
             }
-            else if(transform.localScale.x == -1)
+            else if(transform.position.x > other.gameObject.transform.position.x)
             {
-                
-                //rigid.velocity = new Vector2(HitPushForce, rigid.velocity.y);
-
+                rigid.velocity = new Vector2(HitPushForce, rigid.velocity.y);
             }
         }
     }
+    
     private void OnTriggerExit2D(Collider2D collision)
     {
 

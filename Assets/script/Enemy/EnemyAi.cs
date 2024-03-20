@@ -31,11 +31,13 @@ public class EnemyAi : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         Hit_left = EnemyHit.GetComponent<EnemyHit>().Hit_left;
         Hit_right = EnemyHit.GetComponent<EnemyHit>().Hit_right;
         
         EAttack = AttackReaction.GetComponent<AttackReaction>().EnemyAttack;
         detect = EnemyMovement.GetComponent<EnemyMovement>().Movement;//이렇게 계속 다른컴포넌트가져오는건 최적화에서 애바일듯
+        
         if(detect == false)
         {
             transform.Translate(EnemySpeed * nextMove * Time.deltaTime, 0, 0);
@@ -75,16 +77,16 @@ public class EnemyAi : MonoBehaviour
     }
     void Hit()
     {
-        if(Hit_left == true)
+        if(Hit_left == true)//적보다 오른쪽에 있을 때 맞음
         {
-            //rigid.velocity = new Vector2(-Hit_rage * Time.deltaTime, rigid.velocity.y);
-            rigid.AddForce(Vector2.left * -Hit_rage * Time.deltaTime, ForceMode2D.Impulse);//다음시간에 계속
-            Debug.Log("ww");
+
+            rigid.AddForce(Vector2.left * Hit_rage * Time.deltaTime, ForceMode2D.Impulse);
+  
         }
-        else if(Hit_right == true)
+        else if(Hit_right == true)//적보다 왼쪽에 있을 때 맞음
         {
             //rigid.velocity = new Vector2(Hit_rage * Time.deltaTime, rigid.velocity.y);
-            rigid.AddForce(Vector2.left * Hit_rage * Time.deltaTime, ForceMode2D.Impulse);
+            rigid.AddForce(Vector2.right * Hit_rage * Time.deltaTime, ForceMode2D.Impulse);
         }
     }
     

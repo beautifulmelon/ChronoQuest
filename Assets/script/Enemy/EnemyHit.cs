@@ -30,20 +30,24 @@ public class EnemyHit : MonoBehaviour
             if(rage < 0)
             {
                 Hit_right = true;
+                Invoke("INVOKE_Hit_right", 0.2f);
             }
             else if(rage > 0)
             {
                 Hit_left = true;
+                Invoke("INVOKE_Hit_left", 0.2f);
             }
             //¾Æ¾æ
+            
         }
     }
-    private void OnTriggerExit2D(Collider2D collision)
+    void INVOKE_Hit_right()
     {
-        if(collision.gameObject.tag == "sword")
-        {
-                Hit_right = false;
-                Hit_left = false;
-        }
+        Hit_right = false;
     }
+    void INVOKE_Hit_left()
+    {
+        Hit_left = false;
+    }
+
 }

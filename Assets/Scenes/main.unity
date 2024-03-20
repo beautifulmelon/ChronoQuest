@@ -745,7 +745,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EnemySpeed: 1
-  Hit_rage: 5
+  Hit_rage: 30
   EnemyMovement: {fileID: 1468484372}
   AttackReaction: {fileID: 1897016154}
   EnemyHit: {fileID: 751641096}
@@ -903,7 +903,7 @@ MonoBehaviour:
   sword: {fileID: 4025704576715839588, guid: c3db7cd6b3b953646844de6e92b3dd22, type: 3}
   parent: {fileID: 994777060}
   iswalljump: 0
-  HitPushForce: 4
+  HitPushForce: 5
 --- !u!50 &994777057
 Rigidbody2D:
   serializedVersion: 4
