@@ -13,10 +13,7 @@ public class Player : MonoBehaviour
     public GameObject wall;
     public GameObject Ground;
     public GameObject sword;
-    float attackTime = 0.2f;//공격범위생성시간 
     float attackcultime = 1f;//공격 후 쿨타임
-    bool isattack = false;
-    bool attackOn = true;
     public Transform parent;//prefab부모지정
     GameObject attackManager;
     bool iswall = false;
@@ -56,11 +53,11 @@ public class Player : MonoBehaviour
     private bool isrolling;
     private float attackformchange = 0;
     private int attackform = 1;
-    SpriteRenderer spriteRenderer;
+    //SpriteRenderer spriteRenderer;
     
     void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        //spriteRenderer = GetComponent<SpriteRenderer>();
         rigid = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
@@ -443,17 +440,7 @@ public class Player : MonoBehaviour
     
     private void OnTriggerEnter2D(Collider2D other)//자식 및 본인 모든 콜라이더에게 적용
     {
-        if(other.gameObject.tag == "EnemyAttack")
-        {
-            if(transform.position.x < other.gameObject.transform.position.x)
-            {
-                rigid.velocity = new Vector2(-HitPushForce , rigid.velocity.y);
-            }
-            else if(transform.position.x > other.gameObject.transform.position.x)
-            {
-                rigid.velocity = new Vector2(HitPushForce, rigid.velocity.y);
-            }
-        }
+
     }
     
     private void OnTriggerExit2D(Collider2D collision)

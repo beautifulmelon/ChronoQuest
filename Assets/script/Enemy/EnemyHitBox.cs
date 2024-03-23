@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyHit : MonoBehaviour
+public class EnemyHitBox : MonoBehaviour
 {
     float rage;
     public GameObject Enemy;
