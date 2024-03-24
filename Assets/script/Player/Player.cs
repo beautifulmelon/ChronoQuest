@@ -4,7 +4,7 @@ public class Player : MonoBehaviour
 {    
     public float speed = 6f;//이동속도
     public float dashSpeed = 8f;//대쉬거리
-
+    public int hp;
 
     public int jumpcount = 2;//점프횟수
     public float jump = 17f;//점프 힘
@@ -53,18 +53,16 @@ public class Player : MonoBehaviour
     private bool isrolling;
     private float attackformchange = 0;
     private int attackform = 1;
-    //SpriteRenderer spriteRenderer;
     
     void Awake()
     {
-        //spriteRenderer = GetComponent<SpriteRenderer>();
         rigid = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
     }
     void Update()
     {
-
+        death();
         Move();
         Jump();
         avoid();
@@ -436,6 +434,13 @@ public class Player : MonoBehaviour
 
         }
         */
+    }
+    void death()
+    {
+        if (hp == 0)
+        {
+            Destroy(this.gameObject);//사망
+        }
     }
     
     private void OnTriggerEnter2D(Collider2D other)//자식 및 본인 모든 콜라이더에게 적용

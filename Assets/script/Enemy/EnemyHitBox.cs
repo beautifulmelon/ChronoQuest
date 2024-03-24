@@ -38,7 +38,7 @@ public class EnemyHitBox : MonoBehaviour
                 Invoke("INVOKE_Hit_left", 0.2f);
             }
             //¾Æ¾æ
-            
+            Enemy.GetComponent<EnemyAi>().hp = Enemy.GetComponent<EnemyAi>().hp - 1;
         }
     }
     void INVOKE_Hit_right()

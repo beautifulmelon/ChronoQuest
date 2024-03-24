@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemyAi : MonoBehaviour
 {
+    public int hp;
     public float EnemySpeed;
     public float Hit_rage;//넉백하는 거리
     public GameObject EnemyMovement;
@@ -20,22 +21,20 @@ public class EnemyAi : MonoBehaviour
     // Start is called before the first frame update
     private void Awake()
     {
+
+    }
+
+
+    // Update is called once per frame
+    public void first()
+    {
         rigid = GetComponent<Rigidbody2D>();
         Invoke("Think", 1f);
     }
-    void Start()
+    public void Think()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-
-        EnemyMove();
-        Hit();
-        
+        nextMove = Random.Range(-1, 2);//(최솟값, 최댓값 +1) 최댓값은 안나옴(올림해서그런듯)
+        Invoke("Think", 1f);
     }
     public void EnemyMove()
     {
@@ -73,11 +72,6 @@ public class EnemyAi : MonoBehaviour
             }
         }
     }
-    public void Think()
-    {
-        nextMove = Random.Range(-1, 2);//(최솟값, 최댓값 +1) 최댓값은 안나옴(올림해서그런듯)
-        Invoke("Think", 1f);
-    }
     public void Hit()
     {
         if(Hit_left == true)//적보다 오른쪽에 있을 때 맞음
@@ -90,5 +84,17 @@ public class EnemyAi : MonoBehaviour
             rigid.AddForce(Vector2.right * Hit_rage * Time.deltaTime, ForceMode2D.Impulse);
         }
     }
-    
+    public void EnemyDeath()
+    {
+        if (hp <= 0)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+    public void EnemyFrame()
+    {
+        EnemyMove();
+        Hit();
+        EnemyDeath();
+    }
 }

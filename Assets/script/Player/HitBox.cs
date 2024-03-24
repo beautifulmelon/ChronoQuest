@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class HitBox : MonoBehaviour
     public GameObject Player;
     Rigidbody2D rigid;
     float HitPushForce;
+    int hp;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,6 +33,9 @@ public class HitBox : MonoBehaviour
             {
                 rigid.velocity = new Vector2(HitPushForce, rigid.velocity.y);
             }
+            Player.GetComponent<Player>().hp = Player.GetComponent<Player>().hp -1;
+            
+
         }
     }
 }

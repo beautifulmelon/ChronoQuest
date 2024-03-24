@@ -7,16 +7,13 @@ public class Monster1 : EnemyAi
     // Start is called before the first frame update
     private void Awake()
     {
-        rigid = GetComponent<Rigidbody2D>();
-        Invoke("Think", 1f);
+        first();
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        EnemyMove();
-        Hit();
+        EnemyFrame();
 
     }
 }
