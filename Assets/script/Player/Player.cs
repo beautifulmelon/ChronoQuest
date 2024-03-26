@@ -245,7 +245,7 @@ public class Player : MonoBehaviour
     void Jump()
     {
         isGround = Ground.GetComponent<isGround>().Groundreach;
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKeyDown(KeyCode.C) && !isrolling)
         {
             //rigid.velocity = new Vector2(0, rigid.velocity.y);
             
@@ -423,7 +423,7 @@ public class Player : MonoBehaviour
     void attack()
     {
 
-        if(Input.GetKeyDown(KeyCode.X) && attackcultime <= 0)
+        if(Input.GetKeyDown(KeyCode.X) && attackcultime <= 0 && !isrolling)
         {
             if (Input.GetKey(KeyCode.RightArrow))
             {
