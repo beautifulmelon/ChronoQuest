@@ -17,7 +17,9 @@ public class Player : MonoBehaviour
     public float jump_wall;
     public float jumpPower = 0.05f;//쭉 눌렀을 때 더 띄워지는 값
     private bool jumpcut; //점프 중단
+    private bool iswalljumping;
     public float maxfallspeed; //낙하 최대속도
+    public float wallslidespeed;
 
     public float gravityscale = 9.8f;
     public float fallgravityscale = 2f;
@@ -90,13 +92,13 @@ public class Player : MonoBehaviour
         Jump();
         avoid();
         attack();
-        if(iswall == true && isGround == false && rigid.velocity.y < 0)
+        if(iswall == true && isGround == false && rigid.velocity.y < 0 && (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow)))
         {
             ChangeAnimationState(PLAYER_WALLSLIDE); //애니메이션
             //벽타기
-            if (rigid.velocity.y < -0.5f)//0.5는 maxspeed
+            if (rigid.velocity.y < -wallslidespeed)//0.5는 maxspeed
             {
-                rigid.velocity = new Vector2(rigid.velocity.x, -0.5f);
+                rigid.velocity = new Vector2(rigid.velocity.x, -wallslidespeed);
             }
         }
         else
@@ -249,19 +251,21 @@ public class Player : MonoBehaviour
             
             if (jumpcount > 0)
             {
-                if (iswall && !isGround) //벽 점프
+                if (iswall && !isGround && (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))) //벽 점프
                 {
                     float force = jump;
                     if (rigid.velocity.y < 0)
                     {
                         force -= rigid.velocity.y;
                     }
-                    Vector2 walljumpforce = new Vector2(- jump_wall * transform.localScale.x, force);
+                    Vector2 walljumpforce = new Vector2(- jump_wall * transform.localScale.x, force*0.9f);
                     rigid.AddForce(walljumpforce, ForceMode2D.Impulse);
                     isjump = true;
                     jumpcount--;
                     jumpcut = false;
                     iswalljump = true;
+                    accelInAir = 0.3f;
+                    deccelInAir = 0.3f;
                     /*
                     rigid.velocity = new Vector2(rigid.velocity.x, 0);
                     rigid.AddForce(Vector2.up * jump, ForceMode2D.Impulse);//점프
@@ -335,7 +339,7 @@ public class Player : MonoBehaviour
             jumpTime = 0f;
             jumpcount = 2;
         }
-        else if (iswall)
+        else if (iswall && ((Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))))
         {
             jumpTime = 0f;
             jumpcount = 1;
@@ -360,10 +364,13 @@ public class Player : MonoBehaviour
         {
             ChangeAnimationState(PLAYER_JUMP);
         }
-        if(rigid.velocity.y < 0 && !isGround && !iswall && !isrolling && !isjumpattacking)
+        if(rigid.velocity.y < 0 && !isGround && !(iswall && (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))) && !isrolling && !isjumpattacking)
         {
             isfalling = true;
             ChangeAnimationState(PLAYER_FALL);
+
+            accelInAir = 1;
+            deccelInAir = 1.1f;
         }
     }
     void avoid()
@@ -454,10 +461,12 @@ public class Player : MonoBehaviour
 
                     if (Input.GetKey(KeyCode.RightArrow))
                     {
+                        rigid.velocity = Vector2.zero;
                         rigid.AddForce(Vector2.right * 5, ForceMode2D.Impulse);
                     }
                     else if (Input.GetKey(KeyCode.LeftArrow))
                     {
+                        rigid.velocity = Vector2.zero;
                         rigid.AddForce(Vector2.left * 5, ForceMode2D.Impulse);
                     }
 
