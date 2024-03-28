@@ -9,7 +9,7 @@ public class HitBox : MonoBehaviour
     Rigidbody2D rigid;
     float HitPushForce;
     int hp;
-    // Start is called before the first frame update
+
     void Start()
     {
         rigid = Player.GetComponent<Rigidbody2D>();

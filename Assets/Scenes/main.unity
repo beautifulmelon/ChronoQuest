@@ -735,17 +735,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23ac2b9c0521f5443b09f4328f6d83ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 6
-  dashSpeed: 11
+  speed: 9
+  speedair: 7
+  dashSpeed: 13
   hp: 5
-  jumpcount: 2
+  runAccelAmount: 10
+  runDeccelAmount: 10
+  accelInAir: 1
+  deccelInAir: 1.1
   jump: 10
-  jumpPower: 20
+  jump_wall: 10
+  jumpPower: 0.05
+  maxfallspeed: -13
+  wallslidespeed: 3
+  gravityscale: 2.3
+  fallgravityscale: 2.1
   wall: {fileID: 1210365240}
   Ground: {fileID: 38395349}
   sword: {fileID: 4025704576715839588, guid: c3db7cd6b3b953646844de6e92b3dd22, type: 3}
   parent: {fileID: 994777060}
-  iswalljump: 0
+  cooltime_roll: 0.5
+  cooltime_attack: 0.3
+  cooltime_attack_air: 0.6
   HitPushForce: 4
 --- !u!50 &994777057
 Rigidbody2D:

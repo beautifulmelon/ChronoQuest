@@ -832,6 +832,7 @@ MonoBehaviour:
   speed: 9
   speedair: 7
   dashSpeed: 13
+  hp: 5
   runAccelAmount: 10
   runDeccelAmount: 10
   accelInAir: 1
@@ -850,6 +851,7 @@ MonoBehaviour:
   cooltime_roll: 0.5
   cooltime_attack: 0.3
   cooltime_attack_air: 0.4
+  HitPushForce: 0
 --- !u!50 &994777057
 Rigidbody2D:
   serializedVersion: 4

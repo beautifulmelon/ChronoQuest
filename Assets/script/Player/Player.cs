@@ -49,7 +49,6 @@ public class Player : MonoBehaviour
     public float cooltime_attack_air = 0.6f;
 
     private float rollcooltime = 0;
-    private float attackcultime = 1f;
 
     public float HitPushForce;
     //애니메이션 ---------------------------------------------------------------------------------
