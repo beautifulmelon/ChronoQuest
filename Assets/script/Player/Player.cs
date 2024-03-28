@@ -1,28 +1,55 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
-{    
+{
+    [Header("플레이어 조작감 설정")]
     public float speed = 6f;//이동속도
+    public float speedair; //점프했을 때 이동속도
     public float dashSpeed = 8f;//대쉬거리
     public int hp;
+    public float runAccelAmount = 4;
+    public float runDeccelAmount = 4;
+    public float accelInAir = 1.5f;
+    public float deccelInAir = 1.5f;
 
-    public int jumpcount = 2;//점프횟수
+    private int jumpcount = 2;//점프횟수
     public float jump = 17f;//점프 힘
+    public float jump_wall;
     public float jumpPower = 0.05f;//쭉 눌렀을 때 더 띄워지는 값
+    private bool jumpcut; //점프 중단
+    private bool iswalljumping;
+    public float maxfallspeed; //낙하 최대속도
+    public float wallslidespeed;
 
+    public float gravityscale = 9.8f;
+    public float fallgravityscale = 2f;
+
+    [Header("플레이어에 넣어줘야 할 것들")]
     public GameObject wall;
     public GameObject Ground;
     public GameObject sword;
     float attackcultime = 1f;//공격 후 쿨타임
+    float attackTime = 0.2f;//공격범위생성시간 
+    bool isattack = false;
+    bool attackOn = true;
     public Transform parent;//prefab부모지정
     GameObject attackManager;
     bool iswall = false;
     bool isGround = false;
     float jumpTime = 0f;
     bool isjump = false;
-    public bool iswalljump; //벽점프
+    private bool iswalljump; //벽점프
     Rigidbody2D rigid;
-    float rollcooltime = 0;
+
+    //쿨타임들
+    [Header("쿨타임 설정")]
+    public float cooltime_roll = 0.5f;
+    public float cooltime_attack = 0.3f;
+    public float cooltime_attack_air = 0.6f;
+
+    private float rollcooltime = 0;
+    private float attackcultime = 1f;
 
     public float HitPushForce;
     //애니메이션 ---------------------------------------------------------------------------------
@@ -67,23 +94,111 @@ public class Player : MonoBehaviour
         Jump();
         avoid();
         attack();
-        if(iswall == true && isGround == false && rigid.velocity.y < 0)
+        if(iswall == true && isGround == false && rigid.velocity.y < 0 && (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow)))
         {
             ChangeAnimationState(PLAYER_WALLSLIDE); //애니메이션
             //벽타기
-            if (rigid.velocity.y < -0.5f)//0.5는 maxspeed
+            if (rigid.velocity.y < -wallslidespeed)//0.5는 maxspeed
             {
-                rigid.velocity = new Vector2(rigid.velocity.x, -0.5f);
+                rigid.velocity = new Vector2(rigid.velocity.x, -wallslidespeed);
+            }
+        }
+        else
+        {
+            rigid.velocity = new Vector2(rigid.velocity.x, Mathf.Max(rigid.velocity.y, maxfallspeed));
+        }
+
+        //이동 애니메이션
+        if (!isrolling && !isattacking)
+        {
+            if (isGround && !isrolling)
+            {
+                if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
+                {
+                    ChangeAnimationState(PLAYER_RUN);
+                }
+                else if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow))
+                {
+                    ChangeAnimationState(PLAYER_STOP);
+                    CancelInvoke("StopComplete");
+                    isstopping = true;
+                    Invoke("StopComplete", animator.GetCurrentAnimatorStateInfo(0).length);
+                }
+                else if (isfalling)
+                {
+                    isfalling = false;
+                    ChangeAnimationState(PLAYER_LAND);
+                    CancelInvoke("LandComplete");
+                    islanding = true;
+                    Invoke("LandComplete", animator.GetCurrentAnimatorStateInfo(0).length);
+
+                }
+                else
+                {
+                    if (!isstopping && !islanding)
+                    {
+                        ChangeAnimationState(PLAYER_IDLE);
+                    }
+                }
             }
         }
     }
-
 
     void Move()//좌우 이동
     {
         if (!isrolling && !isattacking)
         {
+            float targetSpeed;
+
             iswall = wall.GetComponent<iswall>().wallreach;
+
+            if (Input.GetKey(KeyCode.LeftArrow) && !iswalljump)
+            {
+                if (isGround)
+                    targetSpeed = -speed;
+                else
+                    targetSpeed = -speedair;
+                
+                transform.localScale = new Vector2(-1, 1);//방향전환
+            }
+            else if (Input.GetKey(KeyCode.RightArrow) && !iswalljump)
+            {
+                if (isGround)
+                    targetSpeed = speed;
+                else
+                    targetSpeed = speedair;
+                transform.localScale = new Vector2(1, 1);//방향전환
+            }
+            else
+            {
+                targetSpeed = 0;
+            }
+
+            //소스코드보고 짠 코드 이동
+            #region
+            float accelRate;
+            if (isGround)
+            {
+                targetSpeed = Mathf.Lerp(rigid.velocity.x, targetSpeed, 1);
+                accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? runAccelAmount : runDeccelAmount;
+            }
+            else
+            {
+                targetSpeed = Mathf.Lerp(rigid.velocity.x, targetSpeed, 1);
+                accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? runAccelAmount * accelInAir : runDeccelAmount * deccelInAir;
+            }
+
+            if(Mathf.Abs(rigid.velocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(rigid.velocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f && !isGround)
+            {
+                accelRate = 0;
+            }
+            float speedDif = targetSpeed - rigid.velocity.x;
+            float movement = speedDif * accelRate;
+            rigid.AddForce(movement * Vector2.right, ForceMode2D.Force);
+            #endregion
+
+            //이전 코드
+            /*
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
                 rigid.velocity = new Vector2(0, rigid.velocity.y);
@@ -122,77 +237,81 @@ public class Player : MonoBehaviour
                 jumpcount = 2;
             }
 
-            if (isGround && !isrolling) //애니메이션
-            {
-                if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
-                {
-                    ChangeAnimationState(PLAYER_RUN);
-                }
-                else if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow))
-                {
-                    ChangeAnimationState(PLAYER_STOP);
-                    CancelInvoke("StopComplete");
-                    isstopping = true;
-                    Invoke("StopComplete", animator.GetCurrentAnimatorStateInfo(0).length);
-                }
-                else if (isfalling)
-                {
-                    isfalling = false;
-                    ChangeAnimationState(PLAYER_LAND);
-                    CancelInvoke("LandComplete");
-                    islanding = true;
-                    Invoke("LandComplete", animator.GetCurrentAnimatorStateInfo(0).length);
-
-                }
-                else
-                {
-                    if (!isstopping && !islanding)
-                    {
-                        ChangeAnimationState(PLAYER_IDLE);
-                    }
-                }
-
-            }
+            
+            */
         }
+
 
     }
 
     void Jump()
     {
         isGround = Ground.GetComponent<isGround>().Groundreach;
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKeyDown(KeyCode.C) && !isrolling)
         {
             //rigid.velocity = new Vector2(0, rigid.velocity.y);
             
             if (jumpcount > 0)
             {
-                if (iswall && !isGround) //벽 점프
+                if (iswall && !isGround && (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))) //벽 점프
                 {
+                    float force = jump;
+                    if (rigid.velocity.y < 0)
+                    {
+                        force -= rigid.velocity.y;
+                    }
+                    Vector2 walljumpforce = new Vector2(- jump_wall * transform.localScale.x, force*0.9f);
+                    rigid.AddForce(walljumpforce, ForceMode2D.Impulse);
+                    isjump = true;
+                    jumpcount--;
+                    jumpcut = false;
+                    iswalljump = true;
+                    accelInAir = 0.3f;
+                    deccelInAir = 0.3f;
+                    /*
                     rigid.velocity = new Vector2(rigid.velocity.x, 0);
                     rigid.AddForce(Vector2.up * jump, ForceMode2D.Impulse);//점프
                     rigid.AddForce(Vector2.left * jump * 0.5f * transform.localScale.x, ForceMode2D.Impulse); //옆으로 점프
                     isjump = true;
                     iswalljump = true;
                     jumpcount--;
+                    */
                 }
                 else
                 {
+                    if (rigid.velocity.y > 0)
+                    {
+                        rigid.velocity = new Vector2(rigid.velocity.x, 0);
+                    }
+                    //소스코드보고 짠 코드
+                    #region
+                    float force = jump;
+                    if (rigid.velocity.y < 0)
+                    {
+                        force -= rigid.velocity.y;
+                    }
+                    rigid.AddForce(Vector2.up * force, ForceMode2D.Impulse);
+                    isjump = true;
+                    jumpcount--;
+                    jumpcut = false;
+                    #endregion
+                    /*
                     rigid.velocity = new Vector2(rigid.velocity.x, 0);
                     rigid.AddForce(Vector2.up * jump, ForceMode2D.Impulse);//점프   
                     isjump = true;
                     jumpcount--;
+                    */
                 }
             }
         }
+        /*
         if (Input.GetKey(KeyCode.C))
         {
-
             if (isjump == true)
             {
+
                 rigid.AddForce(Vector2.up * jumpPower * Time.deltaTime, ForceMode2D.Impulse);//그 이후 쭉 눌렀을 때 증가하는 점프량
-                jumpTime = jumpTime + Time.deltaTime;
-                rigid.AddForce(Vector2.up * jumpPower * Time.deltaTime, ForceMode2D.Impulse);//그 이후 쭉 눌렀을 때 증가하는 점프량
-                jumpTime = jumpTime + Time.deltaTime;
+                jumpTime += Time.deltaTime;
 
                 if (jumpTime > 0.25f) //0.25f는 0.25초간 누를 수 있음
                 {
@@ -201,10 +320,20 @@ public class Player : MonoBehaviour
 
             }
         }
+        */
         if (Input.GetKeyUp(KeyCode.C))//점프를 살짝만 누르고 땠을 때 다시 누르면 힘을 줄 수 있던 것을 방지
         {
             isjump = false;
+            jumpcut = true;
+        }
 
+        if(jumpcut || rigid.velocity.y < 0)
+        {
+            rigid.gravityScale = gravityscale * fallgravityscale;
+        }
+        else
+        {
+            rigid.gravityScale = gravityscale;
         }
 
         if (isGround == true)
@@ -212,7 +341,7 @@ public class Player : MonoBehaviour
             jumpTime = 0f;
             jumpcount = 2;
         }
-        else if (iswall)
+        else if (iswall && ((Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))))
         {
             jumpTime = 0f;
             jumpcount = 1;
@@ -237,10 +366,13 @@ public class Player : MonoBehaviour
         {
             ChangeAnimationState(PLAYER_JUMP);
         }
-        if(rigid.velocity.y < 0 && !isGround && !iswall && !isrolling && !isjumpattacking)
+        if(rigid.velocity.y < 0 && !isGround && !(iswall && (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))) && !isrolling && !isjumpattacking)
         {
             isfalling = true;
             ChangeAnimationState(PLAYER_FALL);
+
+            accelInAir = 1;
+            deccelInAir = 1.1f;
         }
     }
     void avoid()
@@ -254,10 +386,17 @@ public class Player : MonoBehaviour
             isstopping = false; //이거때문에 딜레이 될 때가 있어서 
             Invoke("RollComplete", 0.4f);
             //Invoke("RollComplete", animator.GetCurrentAnimatorStateInfo(0).length / 4f);
-            rollcooltime = 0.7f;
+            rollcooltime = cooltime_roll;
             if (iswall == false)
             {
-                //여기에 구르기 모션만 넣기
+                if (Input.GetKey(KeyCode.RightArrow))
+                    transform.localScale = new Vector2(1, 1);
+                else if (Input.GetKey(KeyCode.RightArrow))
+                    transform.localScale = new Vector2(-1, 1);
+
+                rigid.velocity = new Vector2(dashSpeed * transform.localScale.x, rigid.velocity.y);
+
+                /*
                 if (transform.localScale.x == -1)
                 {
                     rigid.velocity = new Vector2(-dashSpeed, rigid.velocity.y);
@@ -270,6 +409,7 @@ public class Player : MonoBehaviour
                     //rigid.AddForce(Vector2.right * dashSpeed, ForceMode2D.Impulse);
 
                 }
+                */
             }
             //애니메이션으로 굴렀을 때 무적 상태 넣기(구르기 모션일때 무적) + 구르기 쿨타임 + 구르기 모션일 때 방향전환 x
             //굴렀을 때 무적은 isrolling 값을 이용하면 될 듯 나머지 구현 완료 
@@ -285,12 +425,19 @@ public class Player : MonoBehaviour
     void attack()
     {
 
-        if(Input.GetKeyDown(KeyCode.X) && attackcultime <= 0)
+        if(Input.GetKeyDown(KeyCode.X) && attackcultime <= 0 && !isrolling)
         {
-            attackcultime = 0.4f;
+            if (Input.GetKey(KeyCode.RightArrow))
+            {
+                transform.localScale = new Vector2(1, 1);
+            }
+            else if (Input.GetKey(KeyCode.LeftArrow))
+                transform.localScale = new Vector2(-1, 1);
 
             if (isGround) //땅애서 공격할때
             {
+                attackcultime = cooltime_attack;
+
                 if (Input.GetKey(KeyCode.UpArrow))
                 {
                     Vector3 parentPosition = parent.transform.position;
@@ -304,10 +451,12 @@ public class Player : MonoBehaviour
                     ChangeAnimationState(PLAYER_ATTACK_UP);
                     CancelInvoke("AttackComplete");
                     isattacking = true;
-                    Invoke("AttackComplete", 0.38f);
-                }       
+                    Invoke("AttackComplete", cooltime_attack - 0.02f);
+                }
+
                 else
                 {
+
                     Vector3 parentPosition = parent.transform.position;
                     Vector3 newPosition = parentPosition + new Vector3(0.5f * transform.localScale.x, -0.2f, 0);
                     attackManager = Instantiate(sword, newPosition, Quaternion.identity, parent.transform);
@@ -315,15 +464,17 @@ public class Player : MonoBehaviour
 
                     if (Input.GetKey(KeyCode.RightArrow))
                     {
+                        rigid.velocity = Vector2.zero;
                         rigid.AddForce(Vector2.right * 5, ForceMode2D.Impulse);
                     }
                     else if (Input.GetKey(KeyCode.LeftArrow))
                     {
+                        rigid.velocity = Vector2.zero;
                         rigid.AddForce(Vector2.left * 5, ForceMode2D.Impulse);
                     }
 
                     //애니메이션
-                    attackformchange = 0.8f;
+                    attackformchange = 0.5f;
                     if (attackform == 1)
                     {
                         ChangeAnimationState(PLAYER_ATTACK1);
@@ -347,6 +498,7 @@ public class Player : MonoBehaviour
             }
             else if(!isGround && !iswall)
             {
+                attackcultime = cooltime_attack_air;
                 attackformchange = 0; // 공격모션 123 초기화
 
                 if (Input.GetKey(KeyCode.UpArrow))
@@ -382,7 +534,7 @@ public class Player : MonoBehaviour
                 //애니메이션
                 CancelInvoke("JumpAttackComplete");
                 isjumpattacking = true;
-                Invoke("JumpAttackComplete", 0.48f);
+                Invoke("JumpAttackComplete", cooltime_attack_air - 0.02f);
             }
             
 
