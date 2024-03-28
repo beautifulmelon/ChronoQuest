@@ -19,7 +19,7 @@ public class attack : MonoBehaviour
     {
         if(collision.gameObject.tag == "Enemy")
         {
-            Debug.Log("‹š¸²");
+            //Debug.Log("‹š¸²");
             //Á×ÀÌ±â
         }
         if(collision.gameObject.tag == "EnemyAttack")

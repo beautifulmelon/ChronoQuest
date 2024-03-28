@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
     public float speed = 6f;//이동속도
     public float speedair; //점프했을 때 이동속도
     public float dashSpeed = 8f;//대쉬거리
+    public int hp;
     public float runAccelAmount = 4;
     public float runDeccelAmount = 4;
     public float accelInAir = 1.5f;
@@ -28,6 +29,7 @@ public class Player : MonoBehaviour
     public GameObject wall;
     public GameObject Ground;
     public GameObject sword;
+    float attackcultime = 1f;//공격 후 쿨타임
     float attackTime = 0.2f;//공격범위생성시간 
     bool isattack = false;
     bool attackOn = true;
@@ -49,6 +51,7 @@ public class Player : MonoBehaviour
     private float rollcooltime = 0;
     private float attackcultime = 1f;
 
+    public float HitPushForce;
     //애니메이션 ---------------------------------------------------------------------------------
     Animator animator;
     private string currentState;
@@ -77,18 +80,17 @@ public class Player : MonoBehaviour
     private bool isrolling;
     private float attackformchange = 0;
     private int attackform = 1;
-    SpriteRenderer spriteRenderer;
     
     void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
         rigid = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
     }
     void Update()
     {
-        
+        death();
+        Move();
         Jump();
         avoid();
         attack();
@@ -140,10 +142,6 @@ public class Player : MonoBehaviour
                 }
             }
         }
-    }
-    private void FixedUpdate()
-    {
-        Move();
     }
 
     void Move()//좌우 이동
@@ -204,6 +202,8 @@ public class Player : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
                 rigid.velocity = new Vector2(0, rigid.velocity.y);
+    
+
             }
             if (Input.GetKey(KeyCode.LeftArrow))
             {
@@ -215,9 +215,11 @@ public class Player : MonoBehaviour
                 transform.localScale = new Vector2(-1, 1);//방향전환
             }
 
+
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
                 rigid.velocity = new Vector2(0, rigid.velocity.y);
+
             }
             if (Input.GetKey(KeyCode.RightArrow))
             {
@@ -585,11 +587,19 @@ public class Player : MonoBehaviour
         }
         */
     }
+    void death()
+    {
+        if (hp == 0)
+        {
+            Destroy(this.gameObject);//사망
+        }
+    }
     
-    private void OnTriggerEnter2D(Collider2D collision)//자식 및 본인 모든 콜라이더에게 적용
+    private void OnTriggerEnter2D(Collider2D other)//자식 및 본인 모든 콜라이더에게 적용
     {
 
     }
+    
     private void OnTriggerExit2D(Collider2D collision)
     {
 

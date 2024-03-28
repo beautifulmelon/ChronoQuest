@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 5262536097708860575}
   - component: {fileID: 4024325081351414889}
   m_Layer: 0
-  m_Name: AttackRange
-  m_TagString: Untagged
+  m_Name: AttackArm
+  m_TagString: EnemyAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

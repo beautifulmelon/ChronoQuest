@@ -19,7 +19,9 @@ public class EnemyAttack : MonoBehaviour
     {
         if(collision.gameObject.tag == "Player")
         {
-            Debug.Log("데미지입음");
+            
+
+
         }
     }
 }
