@@ -89,7 +89,6 @@ public class Player : MonoBehaviour
     void Update()
     {
         death();
-        Move();
         Jump();
         avoid();
         attack();
@@ -143,6 +142,11 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void FixedUpdate()
+    {
+        Move();
+    }
+
     void Move()//좌우 이동
     {
         if (!isrolling && !isattacking)
@@ -157,7 +161,7 @@ public class Player : MonoBehaviour
                     targetSpeed = -speed;
                 else
                     targetSpeed = -speedair;
-                
+
                 transform.localScale = new Vector2(-1, 1);//방향전환
             }
             else if (Input.GetKey(KeyCode.RightArrow) && !iswalljump)
@@ -187,7 +191,7 @@ public class Player : MonoBehaviour
                 accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? runAccelAmount * accelInAir : runDeccelAmount * deccelInAir;
             }
 
-            if(Mathf.Abs(rigid.velocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(rigid.velocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f && !isGround)
+            if (Mathf.Abs(rigid.velocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(rigid.velocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f && !isGround)
             {
                 accelRate = 0;
             }
@@ -201,8 +205,6 @@ public class Player : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
                 rigid.velocity = new Vector2(0, rigid.velocity.y);
-    
-
             }
             if (Input.GetKey(KeyCode.LeftArrow))
             {
@@ -214,11 +216,9 @@ public class Player : MonoBehaviour
                 transform.localScale = new Vector2(-1, 1);//방향전환
             }
 
-
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
                 rigid.velocity = new Vector2(0, rigid.velocity.y);
-
             }
             if (Input.GetKey(KeyCode.RightArrow))
             {
@@ -249,7 +249,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C) && !isrolling)
         {
             //rigid.velocity = new Vector2(0, rigid.velocity.y);
-            
+
             if (jumpcount > 0)
             {
                 if (iswall && !isGround && (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))) //벽 점프
@@ -259,7 +259,7 @@ public class Player : MonoBehaviour
                     {
                         force -= rigid.velocity.y;
                     }
-                    Vector2 walljumpforce = new Vector2(- jump_wall * transform.localScale.x, force*0.9f);
+                    Vector2 walljumpforce = new Vector2(-jump_wall * transform.localScale.x, force * 0.9f);
                     rigid.AddForce(walljumpforce, ForceMode2D.Impulse);
                     isjump = true;
                     jumpcount--;
@@ -326,7 +326,7 @@ public class Player : MonoBehaviour
             jumpcut = true;
         }
 
-        if(jumpcut || rigid.velocity.y < 0)
+        if (jumpcut || rigid.velocity.y < 0)
         {
             rigid.gravityScale = gravityscale * fallgravityscale;
         }
@@ -365,7 +365,7 @@ public class Player : MonoBehaviour
         {
             ChangeAnimationState(PLAYER_JUMP);
         }
-        if(rigid.velocity.y < 0 && !isGround && !(iswall && (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))) && !isrolling && !isjumpattacking)
+        if (rigid.velocity.y < 0 && !isGround && !(iswall && (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))) && !isrolling && !isjumpattacking)
         {
             isfalling = true;
             ChangeAnimationState(PLAYER_FALL);
@@ -592,17 +592,6 @@ public class Player : MonoBehaviour
         {
             Destroy(this.gameObject);//사망
         }
-    }
-    
-    private void OnTriggerEnter2D(Collider2D other)//자식 및 본인 모든 콜라이더에게 적용
-    {
-
-    }
-    
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-
-
     }
 
     void ChangeAnimationState(string newState)
