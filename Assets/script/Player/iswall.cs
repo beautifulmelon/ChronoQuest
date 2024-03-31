@@ -4,32 +4,18 @@ using UnityEngine;
 
 public class iswall : MonoBehaviour
 {
-    public bool wallreach = false;
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     private void OnTriggerEnter2D(Collider2D collision)//자식 혼자만 적용
     {
-        if (collision.gameObject.tag == "Ground")
+        if (collision.CompareTag("Ground"))
         {
-            wallreach = true;
-
+            Player.instance.iswall = true;
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Ground")
+        if (collision.CompareTag("Ground"))
         {
-            wallreach = false;
-
+            Player.instance.iswall = false;
         }
     }
 }
