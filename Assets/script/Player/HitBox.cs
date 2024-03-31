@@ -5,37 +5,33 @@ using UnityEngine;
 
 public class HitBox : MonoBehaviour
 {
-    public GameObject Player;
-    Rigidbody2D rigid;
-    float HitPushForce;
-    int hp;
-
-    void Start()
-    {
-        rigid = Player.GetComponent<Rigidbody2D>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.tag == "EnemyAttack")
+        if (other.gameObject.tag == "EnemyAttack" && !Player.instance.rightleftAtk && !Player.instance.upAtk && !Player.instance.downAtk && !Player.instance.damaged)
         {
-            if (transform.position.x < other.gameObject.transform.position.x)
-            {
-                HitPushForce = Player.GetComponent<Player>().HitPushForce;
-                rigid.velocity = new Vector2(-HitPushForce, rigid.velocity.y);
-            }
-            else if (transform.position.x > other.gameObject.transform.position.x)
-            {
-                rigid.velocity = new Vector2(HitPushForce, rigid.velocity.y);
-            }
-            Player.GetComponent<Player>().hp = Player.GetComponent<Player>().hp -1;
-            
+            Vector2 heatdirection;
+            int xdirection;
+            int ydirection = 0;
 
+            if(transform.position.x < other.gameObject.transform.position.x)
+            {
+                xdirection = -1;
+            }
+            else
+            {
+                xdirection= 1;
+            }
+            if (!Player.instance.isGround)
+            {
+                if(transform.position.y > other.gameObject.transform.position.y)
+                {
+                    ydirection = 1;
+                }
+            }
+            heatdirection = new Vector2(xdirection, ydirection);
+            Player.instance.Knock_Back(heatdirection);
+            Player.instance.Damaged(1);
+            Cam_Move.instance.DamagedEffect();
         }
     }
 }
