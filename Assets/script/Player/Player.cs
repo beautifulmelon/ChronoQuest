@@ -3,11 +3,17 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [Header("플레이어 능력치")]
+    public int player_hp = 100;
+    public int player_tf = 100;
+    public bool player_transformed = false;
+    public bool player_dead = false;
+    public int player_atk = 10;
+
     [Header("플레이어 조작감 설정")]
     public float speed = 6f;//이동속도
     public float speedair; //점프했을 때 이동속도
     public float dashSpeed = 8f;//대쉬거리
-    public int hp;
     public float runAccelAmount = 4;
     public float runDeccelAmount = 4;
     public float accelInAir = 1.5f;
@@ -18,25 +24,27 @@ public class Player : MonoBehaviour
     public float jump_wall;
     public float jumpPower = 0.05f;//쭉 눌렀을 때 더 띄워지는 값
     private bool jumpcut; //점프 중단
-    private bool iswalljumping;
     public float maxfallspeed; //낙하 최대속도
     public float wallslidespeed;
+    public float attackTime = 0.1f;//공격범위생성시간 
+    public float attackmoveforce = 10;
 
     public float gravityscale = 9.8f;
     public float fallgravityscale = 2f;
+
+    public float knockbackforce = 10;
+    public bool damaged;
+    public float damagedTime = 2f;
 
     [Header("플레이어에 넣어줘야 할 것들")]
     public GameObject wall;
     public GameObject Ground;
     public GameObject sword;
     float attackcultime = 1f;//공격 후 쿨타임
-    float attackTime = 0.2f;//공격범위생성시간 
-    bool isattack = false;
-    bool attackOn = true;
     public Transform parent;//prefab부모지정
-    GameObject attackManager;
-    bool iswall = false;
-    bool isGround = false;
+    public GameObject attackManager;
+    
+    public bool isGround = false;
     float jumpTime = 0f;
     bool isjump = false;
     private bool iswalljump; //벽점프
@@ -51,6 +59,18 @@ public class Player : MonoBehaviour
     private float rollcooltime = 0;
 
     public float HitPushForce;
+
+    [Header("이것 저것")]
+    public bool iswall = false;
+    public bool parrying;
+    private bool parryingAtkReady;
+    private float parryingTimer;
+    public bool rightleftAtk;
+    public bool upAtk;
+    public bool downAtk;
+    public float parryingForce = 10;
+    public Material[] mat = new Material[2];
+
     //애니메이션 ---------------------------------------------------------------------------------
     Animator animator;
     private string currentState;
@@ -79,83 +99,97 @@ public class Player : MonoBehaviour
     private bool isrolling;
     private float attackformchange = 0;
     private int attackform = 1;
+
+    public static Player instance;
+    SpriteRenderer spriteRenderer;
     
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        
+        if(instance == null)
+        {
+            instance = this;
+        }
     }
     void Update()
     {
-        death();
-        Jump();
-        avoid();
-        attack();
-        if(iswall == true && isGround == false && rigid.velocity.y < 0 && (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow)))
+        if (!player_dead)
         {
-            ChangeAnimationState(PLAYER_WALLSLIDE); //애니메이션
-            //벽타기
-            if (rigid.velocity.y < -wallslidespeed)//0.5는 maxspeed
+            Jump();
+            avoid();
+            attack();
+
+            //벽 슬라이드 애니메이션
+            if (iswall == true && isGround == false && rigid.velocity.y < 0 && (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow)))
             {
-                rigid.velocity = new Vector2(rigid.velocity.x, -wallslidespeed);
+                ChangeAnimationState(PLAYER_WALLSLIDE); //애니메이션
+                                                        //벽타기
+                if (rigid.velocity.y < -wallslidespeed)//0.5는 maxspeed
+                {
+                    rigid.velocity = new Vector2(rigid.velocity.x, -wallslidespeed);
+                }
             }
-        }
-        else
-        {
-            rigid.velocity = new Vector2(rigid.velocity.x, Mathf.Max(rigid.velocity.y, maxfallspeed));
-        }
-
-        //이동 애니메이션
-        if (!isrolling && !isattacking)
-        {
-            if (isGround && !isrolling)
+            else
             {
-                if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
-                {
-                    ChangeAnimationState(PLAYER_RUN);
-                }
-                else if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow))
-                {
-                    ChangeAnimationState(PLAYER_STOP);
-                    CancelInvoke("StopComplete");
-                    isstopping = true;
-                    Invoke("StopComplete", animator.GetCurrentAnimatorStateInfo(0).length);
-                }
-                else if (isfalling)
-                {
-                    isfalling = false;
-                    ChangeAnimationState(PLAYER_LAND);
-                    CancelInvoke("LandComplete");
-                    islanding = true;
-                    Invoke("LandComplete", animator.GetCurrentAnimatorStateInfo(0).length);
+                rigid.velocity = new Vector2(rigid.velocity.x, Mathf.Max(rigid.velocity.y, maxfallspeed));
+            }
 
-                }
-                else
+            //이동 애니메이션
+            if (!isrolling && !isattacking)
+            {
+                if (isGround && !isrolling)
                 {
-                    if (!isstopping && !islanding)
+                    if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
                     {
-                        ChangeAnimationState(PLAYER_IDLE);
+                        ChangeAnimationState(PLAYER_RUN);
+                    }
+                    else if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow))
+                    {
+                        ChangeAnimationState(PLAYER_STOP);
+                        CancelInvoke("StopComplete");
+                        isstopping = true;
+                        Invoke("StopComplete", animator.GetCurrentAnimatorStateInfo(0).length);
+                    }
+                    else if (isfalling)
+                    {
+                        isfalling = false;
+                        ChangeAnimationState(PLAYER_LAND);
+                        CancelInvoke("LandComplete");
+                        islanding = true;
+                        Invoke("LandComplete", animator.GetCurrentAnimatorStateInfo(0).length);
+
+                    }
+                    else
+                    {
+                        if (!isstopping && !islanding)
+                        {
+                            ChangeAnimationState(PLAYER_IDLE);
+                        }
                     }
                 }
             }
         }
+        
     }
 
     private void FixedUpdate()
     {
-        Move();
+        if (!player_dead)
+        {
+            Move();
+        }
     }
 
     void Move()//좌우 이동
     {
-        if (!isrolling && !isattacking)
+        if (!isrolling)
         {
             float targetSpeed;
 
-            iswall = wall.GetComponent<iswall>().wallreach;
-
-            if (Input.GetKey(KeyCode.LeftArrow) && !iswalljump)
+            if (Input.GetKey(KeyCode.LeftArrow) && !iswalljump && !isattacking)
             {
                 if (isGround)
                     targetSpeed = -speed;
@@ -164,7 +198,7 @@ public class Player : MonoBehaviour
 
                 transform.localScale = new Vector2(-1, 1);//방향전환
             }
-            else if (Input.GetKey(KeyCode.RightArrow) && !iswalljump)
+            else if (Input.GetKey(KeyCode.RightArrow) && !iswalljump && !isattacking)
             {
                 if (isGround)
                     targetSpeed = speed;
@@ -239,13 +273,10 @@ public class Player : MonoBehaviour
             
             */
         }
-
-
     }
 
     void Jump()
     {
-        isGround = Ground.GetComponent<isGround>().Groundreach;
         if (Input.GetKeyDown(KeyCode.C) && !isrolling)
         {
             //rigid.velocity = new Vector2(0, rigid.velocity.y);
@@ -259,14 +290,14 @@ public class Player : MonoBehaviour
                     {
                         force -= rigid.velocity.y;
                     }
-                    Vector2 walljumpforce = new Vector2(-jump_wall * transform.localScale.x, force * 0.9f);
+                    Vector2 walljumpforce = new Vector2(-jump_wall * transform.localScale.x, force);
                     rigid.AddForce(walljumpforce, ForceMode2D.Impulse);
                     isjump = true;
                     jumpcount--;
                     jumpcut = false;
                     iswalljump = true;
-                    accelInAir = 0.3f;
-                    deccelInAir = 0.3f;
+                    accelInAir = 0.2f;
+                    deccelInAir = 0.2f;
                     /*
                     rigid.velocity = new Vector2(rigid.velocity.x, 0);
                     rigid.AddForce(Vector2.up * jump, ForceMode2D.Impulse);//점프
@@ -423,7 +454,6 @@ public class Player : MonoBehaviour
     }
     void attack()
     {
-
         if(Input.GetKeyDown(KeyCode.X) && attackcultime <= 0 && !isrolling)
         {
             if (Input.GetKey(KeyCode.RightArrow))
@@ -443,7 +473,8 @@ public class Player : MonoBehaviour
                     Vector3 newPosition = parentPosition + new Vector3(0, 0.25f, 0);
                     Quaternion newRotation = Quaternion.Euler(0, 0, 90);
                     attackManager = Instantiate(sword, newPosition, newRotation, parent.transform);
-                    Destroy(attackManager, 0.1f);
+                    Destroy(attackManager, attackTime);
+                    upAtk = true;
 
                     attackformchange = 0; // 공격모션 123 초기화
                     //애니메이션
@@ -451,11 +482,11 @@ public class Player : MonoBehaviour
                     CancelInvoke("AttackComplete");
                     isattacking = true;
                     Invoke("AttackComplete", cooltime_attack - 0.02f);
+                    Invoke("AttackDestroy", 0.1f);
                 }
 
                 else
                 {
-
                     Vector3 parentPosition = parent.transform.position;
                     Vector3 newPosition = parentPosition + new Vector3(0.5f * transform.localScale.x, -0.2f, 0);
                     attackManager = Instantiate(sword, newPosition, Quaternion.identity, parent.transform);
@@ -464,13 +495,14 @@ public class Player : MonoBehaviour
                     if (Input.GetKey(KeyCode.RightArrow))
                     {
                         rigid.velocity = Vector2.zero;
-                        rigid.AddForce(Vector2.right * 5, ForceMode2D.Impulse);
+                        rigid.AddForce(Vector2.right * attackmoveforce, ForceMode2D.Impulse);
                     }
                     else if (Input.GetKey(KeyCode.LeftArrow))
                     {
                         rigid.velocity = Vector2.zero;
-                        rigid.AddForce(Vector2.left * 5, ForceMode2D.Impulse);
+                        rigid.AddForce(Vector2.left * attackmoveforce, ForceMode2D.Impulse);
                     }
+                    rightleftAtk = true;
 
                     //애니메이션
                     attackformchange = 0.5f;
@@ -492,6 +524,7 @@ public class Player : MonoBehaviour
                     CancelInvoke("AttackComplete");
                     isattacking = true;
                     Invoke("AttackComplete", 0.38f);
+                    Invoke("AttackDestroy", 0.1f);
                     //Invoke("AttackComplete", animator.GetCurrentAnimatorStateInfo(0).length);
                 }
             }
@@ -509,6 +542,7 @@ public class Player : MonoBehaviour
                     Destroy(attackManager, 0.1f);
 
                     ChangeAnimationState(PLAYER_JUMP_ATTACK_UP); //애니메이션
+                    upAtk = true;
                 }
                 else if (Input.GetKey(KeyCode.DownArrow))
                 {
@@ -519,6 +553,7 @@ public class Player : MonoBehaviour
                     Destroy(attackManager, 0.1f);
 
                     ChangeAnimationState(PLAYER_JUMP_ATTACK_DOWN); //애니메이션
+                    downAtk = true;
                 }
                 else
                 {
@@ -528,24 +563,53 @@ public class Player : MonoBehaviour
                     Destroy(attackManager, 0.1f);
 
                     ChangeAnimationState(PLAYER_JUMP_ATTACK);
+                    rightleftAtk = true;
                 }
+
 
                 //애니메이션
                 CancelInvoke("JumpAttackComplete");
                 isjumpattacking = true;
                 Invoke("JumpAttackComplete", cooltime_attack_air - 0.02f);
+                Invoke("AttackDestroy", 0.1f);
             }
-            
-
-            //attackManager = Instantiate(sword, parent);
-            //Destroy(attackManager, 0.1f);
+            //패링공격 효과
+            if (parryingAtkReady)
+            {
+                Cam_Move.instance.HardAtkEffect();
+                ChangeMaterial(0);
+            }
+            parrying = false;
         }
         else
         {
             attackcultime -= Time.deltaTime;
         }
 
-        if(attackformchange >0)// 공격 모션 123 바꾸는 코드
+        //패링
+        if (parrying)
+        {
+            parryingTimer += Time.deltaTime;
+            if(parryingTimer > 0.7f)
+            {
+                parrying = false;
+                parryingAtkReady = false;
+                parryingTimer = 0;
+                ChangeMaterial(0);
+            }   
+            else if(parryingTimer > 0.6f)
+            {
+                parryingAtkReady = true;
+                ChangeMaterial(1);
+            }
+        }
+        else
+        {
+            parryingAtkReady = false;
+            parryingTimer = 0;
+        }
+
+        if (attackformchange >0)// 공격 모션 123 바꾸는 코드
         {
             attackformchange -= Time.deltaTime;
         }
@@ -586,14 +650,26 @@ public class Player : MonoBehaviour
         }
         */
     }
-    void death()
+    public void Knock_Back(Vector2 direction)
     {
-        if (hp == 0)
-        {
-            Destroy(this.gameObject);//사망
-        }
+        //rigid.AddForce(direction.normalized * knockbackforce, ForceMode2D.Impulse);
+        rigid.velocity = direction.normalized * knockbackforce;
     }
-
+    public void Damaged(int enemyatk)
+    {
+        player_hp -= enemyatk;
+        damaged = true;
+        Invoke("DamagedEnd", damagedTime);
+        spriteRenderer.color = new Color(1,1,1,0.5f);
+    }
+    public void Parrying()
+    {
+        parrying = true;
+        rigid.velocity = Vector2.zero;
+        if (upAtk) { rigid.AddForce(Vector2.down * parryingForce /4, ForceMode2D.Impulse); }
+        else if(downAtk) { rigid.AddForce(Vector2.up * parryingForce/1.5f, ForceMode2D.Impulse); }
+        else { rigid.AddForce(Vector2.left * transform.localScale.x * parryingForce, ForceMode2D.Impulse); }
+    }
     void ChangeAnimationState(string newState)
     {
         if (currentState == newState) return;
@@ -604,6 +680,12 @@ public class Player : MonoBehaviour
     void AttackComplete()
     {
         isattacking = false;
+    }
+    void AttackDestroy()
+    {
+        rightleftAtk = false;
+        upAtk = false;
+        downAtk = false;
     }
     void JumpAttackComplete()
     {
@@ -620,5 +702,15 @@ public class Player : MonoBehaviour
     void RollComplete()
     {
         isrolling = false;
+    }
+    void DamagedEnd()
+    {
+        damaged = false;
+        spriteRenderer.color = new Color(1, 1, 1, 1);
+    }
+    void ChangeMaterial(int mode)
+    {
+        //mode 0 : 기본 / 1 : 하얀
+        spriteRenderer.material = mat[mode];
     }
 }
