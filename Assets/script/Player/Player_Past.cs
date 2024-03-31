@@ -4,88 +4,48 @@ using UnityEngine;
 
 public class Player_Past : MonoBehaviour
 {
-    private struct PositionSnapshot
+    public Transform Player;
+    private Vector3[] pos = new Vector3[360];
+    int i = 0;
+    int x = 0;
+    private void Start()
     {
-        public Vector3 position;
-        public float timestamp;
-    }
-
-    private List<PositionSnapshot> previousPositions = new List<PositionSnapshot>(); // 이전 위치를 기록하기 위한 리스트
-    private float maxRecordDuration = 3f; // 최대 기록 기간(초)
-
-    void Update()
-    {
-        // 매 프레임마다 현재 위치 업데이트
-        RecordCurrentPosition();
-    }
-
-    void RecordCurrentPosition()
-    {
-        // 현재 위치와 타임스탬프를 기록
-        PositionSnapshot snapshot = new PositionSnapshot();
-        snapshot.position = transform.position;
-        snapshot.timestamp = Time.time;
-        previousPositions.Add(snapshot);
-
-        // 이전 위치 중 일정 시간 이전의 위치만 남기기
-        float currentTime = Time.time;
-        for (int i = previousPositions.Count - 1; i >= 0; i--)
+        for (int j = 0; j < 360; j++)
         {
-            if (currentTime - previousPositions[i].timestamp > maxRecordDuration)
-            {
-                previousPositions.RemoveAt(i);
-            }
-            else
-            {
-                break;
-            }
+            pos[j] = Player.transform.position;
         }
     }
-
-    public Vector3 GetPreviousPosition()
+    private void Update()
     {
-        // 현재 시간을 기준으로 일정 시간 이전의 위치를 찾아 반환
-        float currentTime = Time.time;
-        foreach (var snapshot in previousPositions)
+        //pastTime = pastTime + Time.deltaTime;
+        
+        
+
+        pos[i] = Player.transform.position;//매 프레임 저장 위치 저장
+        i++;
+        
+
+        
+        if(i >= 360)
         {
-            if (currentTime - snapshot.timestamp <= maxRecordDuration)
-            {
-                return snapshot.position;
-            }
+            i = 0;
         }
-        // 이전 위치가 없는 경우 현재 위치를 반환
-        return transform.position;
-    }
-}
-
-public class Example : MonoBehaviour
-{
-    public GameObject targetObject; // 다른 오브젝트의 참조
-    
-    void Update()
-    {
-        targetObject = GameObject.Find("Player");
-        if (Input.GetKeyDown(KeyCode.Space))
+        if(i > 200 ) 
         {
-            // 다른 오브젝트의 3초 전 위치를 얻어옴
-            Vector3 previousPosition = GetPreviousPosition(targetObject);
-            Debug.Log("3초 전 위치: " + previousPosition);
-        }
-    }
-
-    Vector3 GetPreviousPosition(GameObject obj)
-    {
-        // 다른 오브젝트의 위치를 기록하는 컴포넌트를 가져옴
-        Player_Past recorder = obj.GetComponent<Player_Past>();
-        if (recorder != null)
-        {
-            // 다른 오브젝트의 3초 전 위치를 반환
-            return recorder.GetPreviousPosition();
+            x = i - 200;
+            transform.position = pos[x];
         }
         else
         {
-            Debug.LogWarning("PositionRecorder 컴포넌트를 찾을 수 없습니다.");
-            return Vector3.zero;
+            x = (i + 160) % 360;
+            transform.position = pos[x];
         }
+        if (Input.GetKey(KeyCode.A))
+        {
+            Player.transform.position = pos[x];
+        }
+      
+
+        
     }
 }
