@@ -131,7 +131,6 @@ public class Player : MonoBehaviour
             Jump();
             avoid();
             attack();
-
             //플레이어 변신
             if (Input.GetKeyDown(KeyCode.S) && !istransfromCool)
             {
