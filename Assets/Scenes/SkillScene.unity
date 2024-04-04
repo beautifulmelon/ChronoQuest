@@ -755,7 +755,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Player: {fileID: 994777060}
-  framesToGoBack: 150
+  framesToGoBack: 100
 --- !u!1 &967108525
 GameObject:
   m_ObjectHideFlags: 0
@@ -864,7 +864,7 @@ MonoBehaviour:
   speed: 9
   speedair: 7
   dashSpeed: 13
-  hp: 10
+  hp: 100
   runAccelAmount: 10
   runDeccelAmount: 10
   accelInAir: 1
@@ -880,10 +880,11 @@ MonoBehaviour:
   Ground: {fileID: 38395349}
   sword: {fileID: 4025704576715839588, guid: c3db7cd6b3b953646844de6e92b3dd22, type: 3}
   parent: {fileID: 994777060}
+  isHit: 0
   cooltime_roll: 0.5
   cooltime_attack: 0.3
   cooltime_attack_air: 0.6
-  HitPushForce: 10
+  HitPushForce: 3
 --- !u!50 &994777057
 Rigidbody2D:
   serializedVersion: 4
@@ -1553,7 +1554,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2368775316676702000, guid: acc2f87253569b041931f69227676390, type: 3}
       propertyPath: hp
-      value: 10
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 2368775316676702000, guid: acc2f87253569b041931f69227676390, type: 3}
       propertyPath: Playerpos

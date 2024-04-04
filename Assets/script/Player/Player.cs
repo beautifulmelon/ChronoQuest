@@ -39,6 +39,7 @@ public class Player : MonoBehaviour
     bool isGround = false;
     float jumpTime = 0f;
     bool isjump = false;
+    public bool isHit = false;//맞았을 때 
     private bool iswalljump; //벽점프
     Rigidbody2D rigid;
 
@@ -107,7 +108,7 @@ public class Player : MonoBehaviour
         }
 
         //이동 애니메이션
-        if (!isrolling && !isattacking)
+        if (!isrolling && !isattacking && !isHit)//&&isHit 추가함
         {
             if (isGround && !isrolling)
             {
@@ -149,7 +150,7 @@ public class Player : MonoBehaviour
 
     void Move()//좌우 이동
     {
-        if (!isrolling && !isattacking)
+        if (!isrolling && !isattacking && !isHit)//&&isHit 추가함
         {
             float targetSpeed;
 

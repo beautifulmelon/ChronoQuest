@@ -29,7 +29,6 @@ public class Player_Past : MonoBehaviour
             previousIndex = (currentIndex - framesToGoBack + pos.Length) % pos.Length;
             transform.position = pos[previousIndex];
         }
-        Debug.Log(Time.deltaTime);  
         // 현재 위치 기록
 
 
