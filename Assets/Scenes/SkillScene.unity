@@ -756,6 +756,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Player: {fileID: 994777060}
   framesToGoBack: 100
+  PastCoolTime: 5
 --- !u!1 &967108525
 GameObject:
   m_ObjectHideFlags: 0
@@ -884,7 +885,7 @@ MonoBehaviour:
   cooltime_roll: 0.5
   cooltime_attack: 0.3
   cooltime_attack_air: 0.6
-  HitPushForce: 3
+  HitPushForce: 5
 --- !u!50 &994777057
 Rigidbody2D:
   serializedVersion: 4

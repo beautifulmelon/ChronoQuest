@@ -34,6 +34,8 @@ public class HitBox : MonoBehaviour
         if (other.gameObject.tag == "EnemyAttack" && !isHit)
         {
             HitPushForce = Player.GetComponent<Player>().HitPushForce;
+
+            //맞았을 때 애니메이션 넣기
             Player.GetComponent<Player>().hp = Player.GetComponent<Player>().hp - 1;//체력 닳기
             if (transform.position.x < other.gameObject.transform.position.x)
             {        
