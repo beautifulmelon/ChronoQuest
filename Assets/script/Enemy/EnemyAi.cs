@@ -18,14 +18,8 @@ public class EnemyAi : MonoBehaviour
     bool Hit_left = false;
     bool Hit_right = false;
     public Rigidbody2D rigid;
-    // Start is called before the first frame update
-    private void Awake()
-    {
-
-    }
 
 
-    // Update is called once per frame
     public void first()
     {
         rigid = GetComponent<Rigidbody2D>();
@@ -54,6 +48,10 @@ public class EnemyAi : MonoBehaviour
             else if (nextMove > 0)
             {
                 transform.localScale = new Vector2(1, 1);
+            }
+            else
+            {
+
             }
         }
 

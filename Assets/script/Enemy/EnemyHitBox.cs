@@ -10,22 +10,10 @@ public class EnemyHitBox : MonoBehaviour
     public bool Hit_right;
     //iswall = wall.GetComponent<iswall>().wallreach;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.tag == "sword")
         {
-           
             rage = Enemy.GetComponent<EnemyAi>().rage;
             if(rage < 0)
             {
