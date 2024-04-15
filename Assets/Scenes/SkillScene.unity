@@ -194,8 +194,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 027f33f62bd071046bbd24ff25556fd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player: {fileID: 994777055}
-  Groundreach: 0
 --- !u!1 &117014547
 GameObject:
   m_ObjectHideFlags: 0
@@ -828,7 +826,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff3129e3a39b310439234b74ad9be247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player: {fileID: 994777055}
 --- !u!1 &994777055
 GameObject:
   m_ObjectHideFlags: 0
@@ -862,30 +859,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23ac2b9c0521f5443b09f4328f6d83ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player_hp: 100
+  player_tf: 100
+  player_transformed: 0
+  player_dead: 0
+  player_atk: 10
   speed: 9
   speedair: 7
   dashSpeed: 13
-  hp: 100
   runAccelAmount: 10
   runDeccelAmount: 10
   accelInAir: 1
   deccelInAir: 1.1
+  jumpcount: 1
   jump: 10
   jump_wall: 10
   jumpPower: 0.05
   maxfallspeed: -13
   wallslidespeed: 3
+  attackTime: 0.1
+  attackmoveforce: 10
   gravityscale: 2.3
   fallgravityscale: 2.1
+  knockbackforce: 10
+  damaged: 0
+  damagedTime: 2
   wall: {fileID: 1210365240}
   Ground: {fileID: 38395349}
   sword: {fileID: 4025704576715839588, guid: c3db7cd6b3b953646844de6e92b3dd22, type: 3}
   parent: {fileID: 994777060}
+  attackManager: {fileID: 0}
+  shockWaveManager: {fileID: 0}
+  isGround: 0
   isHit: 0
   cooltime_roll: 0.5
   cooltime_attack: 0.3
   cooltime_attack_air: 0.6
+  transform_time: 3
   HitPushForce: 5
+  get_secondjump: 0
+  iswall: 0
+  parrying: 0
+  rightleftAtk: 0
+  upAtk: 0
+  downAtk: 0
+  parryingForce: 10
+  mat:
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!50 &994777057
 Rigidbody2D:
   serializedVersion: 4
@@ -1095,7 +1116,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de40a963b7b3ffd40b9e86c6dffee005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wallreach: 0
 --- !u!1 &1308890366
 GameObject:
   m_ObjectHideFlags: 0
@@ -1408,6 +1428,8 @@ GameObject:
   - component: {fileID: 1918570645}
   - component: {fileID: 1918570644}
   - component: {fileID: 1918570643}
+  - component: {fileID: 1918570647}
+  - component: {fileID: 1918570646}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1481,6 +1503,55 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1918570646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918570642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80d211420a47eca489c8d1486ce5a035, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cammode: 0
+  smoothspeed: 10
+  shakeTime: 0
+  shakeAmount: 1
+--- !u!114 &1918570647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918570642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!1001 &1567755789490419189
 PrefabInstance:
   m_ObjectHideFlags: 0
