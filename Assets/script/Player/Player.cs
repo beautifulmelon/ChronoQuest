@@ -51,6 +51,7 @@ public class Player : MonoBehaviour
 
     public bool isGround = false;
     bool isjump = false;
+    public bool isHit = false;//맞았을 때 
     private bool iswalljump; //벽점프
     Rigidbody2D rigid;
 
@@ -138,6 +139,7 @@ public class Player : MonoBehaviour
                 StartCoroutine(TransformCool());
             }
 
+
             //벽 슬라이드 애니메이션
             if (iswall == true && isGround == false && rigid.velocity.y < 0 && (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow)))
             {
@@ -202,7 +204,6 @@ public class Player : MonoBehaviour
     void Move()//좌우 이동
     {
         float targetSpeed;
-
         if (Input.GetKey(KeyCode.LeftArrow) && !iswalljump && !isattacking && !isdashing && !isrolling)
         {
             if (isGround)
