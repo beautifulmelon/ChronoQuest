@@ -48,6 +48,7 @@ public class Player : MonoBehaviour
     public Transform parent;//prefab부모지정
     public GameObject attackManager;
     public ShockWaveManager shockWaveManager;
+    public GameObject shockWaveObj;
 
     public bool isGround = false;
     bool isjump = false;
@@ -732,6 +733,7 @@ public class Player : MonoBehaviour
 
             if (shockWaveManager != null)
             {
+                shockWaveObj.SetActive(true);
                 shockWaveManager.CallShockWave2();
             }
         }
@@ -758,9 +760,11 @@ public class Player : MonoBehaviour
 
             if(shockWaveManager != null)
             {
+                shockWaveObj.SetActive(true);
                 shockWaveManager.CallShockWave();
             }
         }
+        StartCoroutine(ShockWaveOff());
     }
 
     IEnumerator TransformCool()
@@ -774,5 +778,10 @@ public class Player : MonoBehaviour
         isdashing = true;
         yield return new WaitForSeconds(0.2f);
         isdashing = false;
+    }
+    IEnumerator ShockWaveOff()
+    {
+        yield return new WaitForSeconds(1);
+        shockWaveObj.SetActive(false);
     }
 }

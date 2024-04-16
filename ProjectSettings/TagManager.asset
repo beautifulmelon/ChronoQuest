@@ -48,3 +48,6 @@ TagManager:
   - name: CameraSortingLayer
     uniqueID: 3848492559
     locked: 0
+  - name: Enemy
+    uniqueID: 3197018213
+    locked: 0
