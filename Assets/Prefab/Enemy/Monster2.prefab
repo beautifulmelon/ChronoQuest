@@ -276,6 +276,7 @@ MonoBehaviour:
   Enemy: {fileID: 1567755790191980940}
   Hit_left: 0
   Hit_right: 0
+  Player: {fileID: 0}
 --- !u!1 &1567755790191980940
 GameObject:
   m_ObjectHideFlags: 0
@@ -425,12 +426,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89c23a0dd186f6b469c01876530ca412, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 2
+  hp: 150
+  attackDamage: 15
   EnemySpeed: 5
   Hit_rage: 30
   EnemyMovement: {fileID: 1567755789597984843}
   AttackReaction: {fileID: 1567755789912735314}
   EnemyHitBox: {fileID: 1567755790127213506}
-  Playerpos: {fileID: 0}
   rage: 0
   rigid: {fileID: 1567755790191980942}

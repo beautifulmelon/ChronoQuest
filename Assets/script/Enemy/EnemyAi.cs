@@ -5,12 +5,14 @@ using UnityEngine;
 public class EnemyAi : MonoBehaviour
 {
     public int hp;
+    public int attackDamage;
     public float EnemySpeed;
     public float Hit_rage;//넉백하는 거리
     public GameObject EnemyMovement;
     public GameObject AttackReaction;
     public GameObject EnemyHitBox;
-    public Transform Playerpos;
+    GameObject Player;
+    Vector3 Playerpos;
     int nextMove = 0;
     bool detect = false;
     bool EAttack = false;
@@ -23,6 +25,7 @@ public class EnemyAi : MonoBehaviour
     public void first()
     {
         rigid = GetComponent<Rigidbody2D>();
+        Player = GameObject.Find("Player");
         Invoke("Think", 1f);
     }
     public void Think()
@@ -57,7 +60,8 @@ public class EnemyAi : MonoBehaviour
 
         else if (detect == true && EAttack == false)
         {
-            rage = Playerpos.position.x - transform.position.x;
+            Playerpos =  Player.transform.position;
+            rage = Playerpos.x - transform.position.x;
             if (rage < 0f)
             {
                 transform.Translate(-EnemySpeed * Time.deltaTime, 0, 0);

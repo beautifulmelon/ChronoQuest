@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
     public bool player_transformed = false;
     private bool istransfromCool;
     public bool player_dead = false;
-    public int player_atk = 10;
+    public int player_atk = 15;
 
     [Header("플레이어 조작감 설정")]
     public float speed = 6f;//이동속도
@@ -63,7 +63,9 @@ public class Player : MonoBehaviour
     public float cooltime_attack_air = 0.6f;
     public float transform_time = 3f;
     private float rollcooltime = 0;
-
+    public float cooltime_past = 5f;
+    public int framesToGoBack = 100;
+    public float PastCoolTime = 5f;
     public float HitPushForce;
 
     [Header("플레이어 능력 얻었는지 확인")]

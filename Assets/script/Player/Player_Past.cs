@@ -1,18 +1,22 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player_Past : MonoBehaviour
 {
     public Transform Player;
-
+    public GameObject GameObject;
     private Vector3[] pos = new Vector3[720]; // 더 나중의 위치를 가져오고 싶다면 이걸 높게
     private int currentIndex = 0;
-    public int framesToGoBack; // 뒤로 이동할 프레임 수
+    int framesToGoBack; // 뒤로 이동할 프레임 수
+    float PastCoolTime = 5f;
     int previousIndex = 0;
     float recordInterval = 0;
     bool OnPast = true;
-    public float PastCoolTime = 5f;
+
     private void Start()
     {
+        framesToGoBack = GameObject.GetComponent<Player>().framesToGoBack;
+        PastCoolTime = GameObject.GetComponent<Player>().PastCoolTime;
         // 초기 위치 기록
         for (int j = 0; j < 720; j++)
         {

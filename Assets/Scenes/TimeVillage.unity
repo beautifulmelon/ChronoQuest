@@ -21613,7 +21613,7 @@ MonoBehaviour:
   player_tf: 5
   player_transformed: 0
   player_dead: 0
-  player_atk: 5
+  player_atk: 15
   speed: 9
   speedair: 7
   dashSpeed: 13
@@ -21642,10 +21642,14 @@ MonoBehaviour:
   shockWaveManager: {fileID: 1682785066}
   shockWaveObj: {fileID: 1682785063}
   isGround: 0
+  isHit: 0
   cooltime_roll: 0.5
   cooltime_attack: 0.3
   cooltime_attack_air: 0.3
   transform_time: 3
+  cooltime_past: 5
+  framesToGoBack: 100
+  PastCoolTime: 5
   HitPushForce: 4
   get_secondjump: 0
   iswall: 0
