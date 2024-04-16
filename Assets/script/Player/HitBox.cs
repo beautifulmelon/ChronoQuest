@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class HitBox : MonoBehaviour
@@ -30,7 +31,7 @@ public class HitBox : MonoBehaviour
             }
             heatdirection = new Vector2(xdirection, ydirection);
             Player.instance.Knock_Back(heatdirection);
-            Player.instance.Damaged(1);
+            Player.instance.Damaged(other.gameObject.GetComponent<EnemyAttack>().attackDamage);
             Cam_Move.instance.DamagedEffect();
         }
     }

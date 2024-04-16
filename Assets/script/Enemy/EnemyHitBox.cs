@@ -8,7 +8,7 @@ public class EnemyHitBox : MonoBehaviour
     public GameObject Enemy;
     public bool Hit_left;
     public bool Hit_right;
-    public GameObject Player;
+    GameObject Player;
     int player_atk;
     //iswall = wall.GetComponent<iswall>().wallreach;
     private void Awake()
