@@ -11,14 +11,14 @@ public class EnemyAi : MonoBehaviour
     public GameObject AttackReaction;
     public GameObject EnemyHitBox;
     public Transform Playerpos;
-    int nextMove = 0;
+    public int nextMove = 0;
     bool detect = false;
-    bool EAttack = false;
+    public bool EAttack = false;
     public float rage = 0f;
     bool Hit_left = false;
     bool Hit_right = false;
     public Rigidbody2D rigid;
-
+    public bool attackstop;
 
     public void first()
     {
@@ -37,38 +37,41 @@ public class EnemyAi : MonoBehaviour
 
         EAttack = AttackReaction.GetComponent<AttackReaction>().EnemyAttack;
         detect = EnemyMovement.GetComponent<EnemyMovement>().Movement;//이렇게 계속 다른컴포넌트가져오는건 최적화에서 애바일듯
+        if(EAttack && !attackstop)
+        {
+            StartCoroutine(Attackstop());
+        }
 
         if (detect == false)
         {
-            transform.Translate(EnemySpeed * nextMove * Time.deltaTime, 0, 0);
+            //transform.Translate(EnemySpeed * nextMove * Time.deltaTime, 0, 0);
             if (nextMove < 0)
-            {
-                transform.localScale = new Vector2(-1, 1);
-            }
-            else if (nextMove > 0)
             {
                 transform.localScale = new Vector2(1, 1);
             }
-            else
+            else if (nextMove > 0)
             {
-
+                transform.localScale = new Vector2(-1, 1);
             }
         }
 
-        else if (detect == true && EAttack == false)
+        else if (detect == true && EAttack == false && !attackstop)
         {
             rage = Playerpos.position.x - transform.position.x;
             if (rage < 0f)
             {
-                transform.Translate(-EnemySpeed * Time.deltaTime, 0, 0);
+                //transform.Translate(-EnemySpeed * Time.deltaTime, 0, 0);
+                nextMove = 1;
                 transform.localScale = new Vector2(-1, 1);
             }
             else if (rage > 0f)
             {
-                transform.Translate(EnemySpeed * Time.deltaTime, 0, 0);
+                //transform.Translate(EnemySpeed * Time.deltaTime, 0, 0);
+                nextMove = -1;
                 transform.localScale = new Vector2(1, 1);
             }
         }
+        else { nextMove = 0; }
     }
     public void Hit()
     {
@@ -82,17 +85,50 @@ public class EnemyAi : MonoBehaviour
             rigid.AddForce(Vector2.right * Hit_rage * Time.deltaTime, ForceMode2D.Impulse);
         }
     }
+    /*
     public void EnemyDeath()
     {
         if (hp <= 0)
         {
-            Destroy(this.gameObject);
+            Destroy(this.gameObject, 3f);
         }
     }
+    */
     public void EnemyFrame()
     {
         EnemyMove();
         Hit();
-        EnemyDeath();
+        //EnemyDeath();
+        Move();
+    }
+    void Move()//좌우 이동
+    {
+        float targetSpeed;
+        if (nextMove == 1)
+        {
+            targetSpeed = -EnemySpeed;
+        }
+        else if (nextMove == -1)
+        {
+            targetSpeed = EnemySpeed;
+        }
+        else
+        {
+            targetSpeed = 0;
+        }
+        float accelRate;
+        targetSpeed = Mathf.Lerp(rigid.velocity.x, targetSpeed, 1);
+        accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? 10 : 10;
+        
+        float speedDif = targetSpeed - rigid.velocity.x;
+        float movement = speedDif * accelRate;
+        rigid.AddForce(movement * Vector2.right, ForceMode2D.Force);
+    }
+
+    IEnumerator Attackstop()
+    {
+        attackstop = true;
+        yield return new WaitForSeconds(1.6f);
+        attackstop = false;
     }
 }

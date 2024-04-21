@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - EnemyAttack
   - sword
+  - NPC
   layers:
   - Default
   - TransparentFX
@@ -18,8 +19,8 @@ TagManager:
   - Enemy
   - Player
   - Ground
-  - 
-  - 
+  - Cam
+  - NPC
   - 
   - 
   - 
@@ -50,4 +51,7 @@ TagManager:
     locked: 0
   - name: Enemy
     uniqueID: 3197018213
+    locked: 0
+  - name: tree
+    uniqueID: 3312501239
     locked: 0

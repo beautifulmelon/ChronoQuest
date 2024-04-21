@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
     public bool player_transformed = false;
     private bool istransfromCool;
     public bool player_dead = false;
-    public int player_atk = 10;
+    public int player_atk = 1;
 
     [Header("플레이어 조작감 설정")]
     public float speed = 6f;//이동속도
@@ -69,6 +69,8 @@ public class Player : MonoBehaviour
     [Header("플레이어 능력 얻었는지 확인")]
     public bool get_secondjump;
     private bool secondjumped;
+    public bool get_transform;
+    public bool get_attack;
 
     [Header("이것 저것")]
     public bool iswall = false;
@@ -80,6 +82,8 @@ public class Player : MonoBehaviour
     public bool downAtk;
     public float parryingForce = 10;
     public Material[] mat = new Material[2];
+    public bool unable_control;
+    public bool caninteraction;
 
     //애니메이션 ---------------------------------------------------------------------------------
     Animator animator;
@@ -128,13 +132,13 @@ public class Player : MonoBehaviour
     }
     void Update()
     {
-        if (!player_dead)
+        if (!player_dead && !unable_control)
         {
             Jump();
             avoid();
             attack();
             //플레이어 변신
-            if (Input.GetKeyDown(KeyCode.S) && !istransfromCool)
+            if (Input.GetKeyDown(KeyCode.S) && !istransfromCool && get_transform)
             {
                 Player_Transform();
                 StartCoroutine(TransformCool());
@@ -205,7 +209,7 @@ public class Player : MonoBehaviour
     void Move()//좌우 이동
     {
         float targetSpeed;
-        if (Input.GetKey(KeyCode.LeftArrow) && !iswalljump && !isattacking && !isdashing && !isrolling)
+        if (Input.GetKey(KeyCode.LeftArrow) && !iswalljump && !isattacking && !isdashing && !isrolling && !unable_control)
         {
             if (isGround)
                 targetSpeed = -speed;
@@ -214,7 +218,7 @@ public class Player : MonoBehaviour
 
             transform.localScale = new Vector2(-1, 1);//방향전환
         }
-        else if (Input.GetKey(KeyCode.RightArrow) && !iswalljump && !isattacking && !isdashing && !isrolling)
+        else if (Input.GetKey(KeyCode.RightArrow) && !iswalljump && !isattacking && !isdashing && !isrolling && !unable_control)
         {
             if (isGround)
                 targetSpeed = speed;
@@ -449,7 +453,7 @@ public class Player : MonoBehaviour
     }
     void attack()
     {
-        if(Input.GetKeyDown(KeyCode.X) && attackcultime <= 0 && !isrolling)
+        if(Input.GetKeyDown(KeyCode.X) && attackcultime <= 0 && !isrolling && !caninteraction && get_attack)
         {
             if (Input.GetKey(KeyCode.RightArrow))
             {
@@ -665,7 +669,7 @@ public class Player : MonoBehaviour
         else if(downAtk) { rigid.AddForce(Vector2.up * parryingForce/1.5f, ForceMode2D.Impulse); }
         else { rigid.AddForce(Vector2.left * transform.localScale.x * parryingForce, ForceMode2D.Impulse); }
     }
-    void ChangeAnimationState(string newState)
+    public void ChangeAnimationState(string newState)
     {
         if (currentState == newState) return;
 

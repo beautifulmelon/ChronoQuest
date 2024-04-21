@@ -12,6 +12,15 @@ public class Cam_Move : MonoBehaviour
     public float shakeAmount = 1;
     private bool isshaking;
 
+    public float camsize;
+    public bool targeton;
+    public Vector3 targetpos;
+    public float targetsize = 5;
+    public float[] camends = new float[3];
+    public Vector3 startpos;
+
+    public bool cammapmove;
+
     public static Cam_Move instance;
     private void Awake()
     {
@@ -23,8 +32,53 @@ public class Cam_Move : MonoBehaviour
 
     void LateUpdate()
     {
-        if(cammode == 0) { setcampos1(); }
-        else if(cammode == 1) {  setcampos2(); }
+        //if (targeton) { campos = Vector3.Lerp(transform.position, new Vector3((Player.instance.parent.position.x + targetpos.x)/2.0f, (Player.instance.parent.position.y + targetpos.y)/2.0f, -10), smoothspeed * Time.deltaTime); }
+        //else { campos = Vector3.Lerp(transform.position, new Vector3(Player.instance.parent.position.x, Player.instance.parent.position.y, -10), smoothspeed * Time.deltaTime); }
+        campos = Vector3.Lerp(transform.position, new Vector3(Player.instance.parent.position.x, Player.instance.parent.position.y, -10), smoothspeed * Time.deltaTime);
+        if (cammapmove)
+        {
+            if (campos.x < camends[0])
+            {
+                campos.x += camends[0] * Time.deltaTime;
+            }
+            else if (campos.x > camends[1])
+            {
+                campos.x -= camends[1] * Time.deltaTime;
+            }
+            else if (campos.y < camends[2])
+            {
+                campos.y += camends[2] * Time.deltaTime;
+            }
+            else if (campos.y > camends[3])
+            {
+                campos.y -= camends[3] * Time.deltaTime;
+            }
+            else { cammapmove = false; }
+        }
+        else
+        {
+            if (campos.x < camends[0])
+            {
+                campos.x = camends[0];
+            }
+            else if (campos.x > camends[1])
+            {
+                campos.x = camends[1];
+            }
+
+            if (campos.y < camends[2])
+            {
+                campos.y = camends[2];
+            }
+            else if (campos.y > camends[3])
+            {
+                campos.y = camends[3];
+            }
+        }
+
+        transform.position = campos;
+
+        CamZoom(targetsize);
     }
     private void FixedUpdate()
     {
@@ -36,18 +90,6 @@ public class Cam_Move : MonoBehaviour
         }
     }
 
-    void setcampos1() //캐릭터 위치에 카메라 고정
-    {
-        campos = new Vector3(Player.instance.parent.position.x, Player.instance.parent.position.y, -10);
-        transform.position = campos;
-    }
-    void setcampos2() //lerp로 캐릭터 쫓아가기
-    {
-        campos = new Vector3(Player.instance.parent.position.x, Player.instance.parent.position.y, -10);
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, campos, smoothspeed * Time.deltaTime);
-        transform.position = smoothedPosition;
-    }
-    //플레이어 데미지
     public void DamagedEffect() 
     {
         shakeTime = 0.1f;
@@ -55,7 +97,6 @@ public class Cam_Move : MonoBehaviour
         CancelInvoke("StopShaking");
         Invoke("StopShaking", shakeTime);
     }
-    //플레이어 강공격
     public void HardAtkEffect()
     {
         shakeTime = 0.1f;
@@ -71,5 +112,22 @@ public class Cam_Move : MonoBehaviour
     void StopShaking()
     {
         isshaking = false;
+    }
+
+    public void SetstartCampos()
+    {
+        campos = startpos;
+    }
+    public void CamZoom(float targetsize)
+    {
+        float camsize = Camera.main.orthographicSize - targetsize;
+        if (camsize < 0 && Camera.main.orthographicSize < targetsize)
+        {
+            Camera.main.orthographicSize -= camsize * Time.deltaTime;
+        }
+        else if(camsize >= 0 && Camera.main.orthographicSize > targetsize)
+        {
+            Camera.main.orthographicSize -= camsize * Time.deltaTime;
+        }
     }
 }

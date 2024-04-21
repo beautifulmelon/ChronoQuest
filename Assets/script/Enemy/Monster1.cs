@@ -4,16 +4,41 @@ using UnityEngine;
 
 public class Monster1 : EnemyAi
 {
-    // Start is called before the first frame update
+    Animator animator;
+    SpriteRenderer spriteRenderer;
+    public bool dead;
+    public Material[] mat = new Material[2];
+    float timer = 3;
     private void Awake()
     {
         first();
+        animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         EnemyFrame();
-
+        if(nextMove != 0)
+        {
+            animator.SetBool("walk", true);
+        }
+        else { animator.SetBool("walk", false); }
+        
+        if(hp <=0 && !dead)
+        {
+            EnemyDeath();
+            dead = true;
+        }
+        if (dead)
+        {
+            timer -= Time.deltaTime;
+            if(timer < 1) { spriteRenderer.color = new Color(1, 1, 1, timer); }
+        }
+    }
+    void EnemyDeath()
+    {
+        animator.SetBool("dead", true);
+        Destroy(this.gameObject, 3f);
     }
 }
